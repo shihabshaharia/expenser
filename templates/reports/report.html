@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Reports — Expenser{% endblock %}
+
+{% block content %}
+{# TODO (Person 3): Build the full report page:
+   - Preset range buttons: this_week, this_month, last_month, this_year, last_year, tax_year
+   - Custom date range: date_from + date_to inputs with Apply button
+   - Three summary cards: total_income, total_expenses, net_balance (all from context)
+   - Expenses by category table: category name + total amount (by_category queryset)
+   - Bar chart using Chart.js (CDN) — data from top_5_expense_categories
+     Labels: category__name values; Data: total values
+     Load Chart.js in {% block extra_js %} at bottom of page
+   - Download CSV link → {% url 'report_export' %}?date_from=...&date_to=...
+#}
+<p class="text-gray-500">Reports — coming soon (Person 3).</p>
+{% endblock %}
+
+{% block extra_js %}
+{# TODO (Person 3): Add Chart.js CDN script and initialise the bar chart here #}
+{% endblock %}

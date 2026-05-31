@@ -1,0 +1,64 @@
+{% load tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Expenser{% endblock %}</title>
+  {% tailwind_css %}
+</head>
+<body class="h-full">
+
+<div class="min-h-full">
+  <!-- Navigation -->
+  <nav class="bg-indigo-600">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <div class="flex items-center gap-8">
+          <a href="{% url 'dashboard' %}" class="text-white font-bold text-xl">Expenser</a>
+          {% if user.is_authenticated %}
+          <div class="flex gap-4 text-sm">
+            <a href="{% url 'entry_list' %}" class="text-indigo-200 hover:text-white">Entries</a>
+            <a href="{% url 'category_list' %}" class="text-indigo-200 hover:text-white">Categories</a>
+            <a href="{% url 'budget_list' %}" class="text-indigo-200 hover:text-white">Budgets</a>
+            <a href="{% url 'report' %}" class="text-indigo-200 hover:text-white">Reports</a>
+          </div>
+          {% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        <div class="flex items-center gap-4 text-sm">
+          <span class="text-indigo-200">{{ user.username }}</span>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="text-indigo-200 hover:text-white">Log out</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4 space-y-2">
+    {% for message in messages %}
+    <div class="rounded-md p-4
+      {% if message.tags == 'error' %}bg-red-50 text-red-800
+      {% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-800
+      {% elif message.tags == 'success' %}bg-green-50 text-green-800
+      {% else %}bg-blue-50 text-blue-800{% endif %}">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Page content -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
