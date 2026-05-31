@@ -80,7 +80,6 @@ App runs at **http://localhost:8000** — admin at **http://localhost:8000/admin
 
 For teammates running the project directly on a Ubuntu 24.04 VM.
 
-> A full step-by-step setup guide (`.docx`) is available in the `/docs` folder of this repo.
 
 #### Prerequisites
 
@@ -153,7 +152,6 @@ expenser/
 ├── reports/            # Report views and CSV export
 ├── theme/              # django-tailwind theme app
 ├── templates/          # Shared base templates and partials
-├── docs/               # Setup guide and PRD (to be created)
 ├── .env.example        # Example environment variables
 ├── docker-compose.yml
 ├── Dockerfile
@@ -257,15 +255,6 @@ This project is built to showcase Django's built-in capabilities. Key features d
 | Shihab Shaharia | Setup + Core | Project scaffold, models, admin, auth, Docker, system design |
 | [Teammate 2] | Entry management + Budgets | Entry CRUD, filtering, budgets, recurring entries, dashboard |
 | [Teammate 3] | Reports + UI | Reports, CSV export, Chart.js, template tags, documentation |
-
----
-
-## Docs
-
-The `/docs` folder contains:
-
-- `expenser_prd.docx` — full product requirements document
-- `expenser_setup_guide.docx` — step-by-step Ubuntu VM setup guide (no Docker)
 
 ---
 
