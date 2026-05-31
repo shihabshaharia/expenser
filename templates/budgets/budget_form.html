@@ -2,10 +2,51 @@
 {% block title %}{% if object %}Edit Budget{% else %}Add Budget{% endif %} — Expenser{% endblock %}
 
 {% block content %}
-{# TODO (Person 2): Render BudgetForm here.
-   - Loop {% for field in form %}
-   - Note: month field uses type="month" widget — renders a native month picker
-   - Save button + Cancel → {% url 'budget_list' %}
-#}
-<p class="text-gray-500">Budget form — coming soon (Person 2).</p>
+
+<div class="mb-6">
+  <p class="text-xs font-medium tracking-widest uppercase text-gray-400">
+    {% if object %}Editing{% else %}New{% endif %}
+  </p>
+  <h1 class="text-2xl font-bold text-gray-900 mt-0.5">
+    {% if object %}Edit Budget{% else %}Add Budget{% endif %}
+  </h1>
+</div>
+
+<div class="max-w-md">
+  <div class="bg-white border border-gray-200 rounded-xl p-6">
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+
+      {% comment %}
+      TODO (Person 2): Render the BudgetForm here.
+      for field in form
+        <div>
+          <label for="field.id_for_label"
+                 class="block text-sm font-medium text-gray-700 mb-1">field.label</label>
+          if field.help_text: <p class="text-xs text-gray-400 mb-1">field.help_text</p>
+          field (rendered widget)
+          if field.errors: <p class="mt-1 text-xs text-red-600">field.errors|join:", "</p>
+        </div>
+      endfor
+
+      Note: the month field uses type="month" widget — renders a native month picker (YYYY-MM).
+      Django saves this as the first day of the selected month — handle this in BudgetForm.clean().
+      {% endcomment %}
+      <p class="text-sm text-gray-400">Budget form — Person 2: render the form loop here.</p>
+
+      <div class="flex items-center gap-3 pt-2 border-t border-gray-100">
+        <button type="submit"
+                class="bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-5 py-2 text-sm font-medium transition-colors">
+          Save budget
+        </button>
+        <a href="{% url 'budget_list' %}"
+           class="text-sm text-gray-500 hover:text-gray-900 px-4 py-2">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
 {% endblock %}

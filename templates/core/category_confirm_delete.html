@@ -2,9 +2,31 @@
 {% block title %}Delete Category — Expenser{% endblock %}
 
 {% block content %}
-{# TODO (Person 2): Confirmation page — show {{ object.name }} and a POST form with CSRF token.
-   Warn that categories with existing entries are protected (on_delete=PROTECT).
-   Buttons: Delete (red) / Cancel → {% url 'category_list' %}
-#}
-<p class="text-gray-500">Delete category confirmation — coming soon (Person 2).</p>
+
+<div class="max-w-md">
+  <h1 class="text-2xl font-bold text-gray-900 mb-2">Delete category?</h1>
+  <p class="text-sm text-gray-500 mb-2">
+    This will permanently delete
+    <strong class="text-gray-900">{{ object.name }}</strong>.
+  </p>
+  <p class="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-6">
+    ⚠ Categories that have entries attached cannot be deleted — the database will block it.
+    Delete or reassign the entries first.
+  </p>
+
+  <div class="bg-white border border-gray-200 rounded-xl p-6">
+    <form method="post" class="flex items-center gap-3">
+      {% csrf_token %}
+      <button type="submit"
+              class="bg-red-600 text-white hover:bg-red-700 rounded-lg px-5 py-2 text-sm font-medium transition-colors">
+        Yes, delete
+      </button>
+      <a href="{% url 'category_list' %}"
+         class="text-sm text-gray-500 hover:text-gray-900 px-4 py-2">
+        Cancel
+      </a>
+    </form>
+  </div>
+</div>
+
 {% endblock %}

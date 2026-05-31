@@ -2,19 +2,115 @@
 {% block title %}Reports — Expenser{% endblock %}
 
 {% block content %}
-{# TODO (Person 3): Build the full report page:
-   - Preset range buttons: this_week, this_month, last_month, this_year, last_year, tax_year
-   - Custom date range: date_from + date_to inputs with Apply button
-   - Three summary cards: total_income, total_expenses, net_balance (all from context)
-   - Expenses by category table: category name + total amount (by_category queryset)
-   - Bar chart using Chart.js (CDN) — data from top_5_expense_categories
-     Labels: category__name values; Data: total values
-     Load Chart.js in {% block extra_js %} at bottom of page
-   - Download CSV link → {% url 'report_export' %}?date_from=...&date_to=...
-#}
-<p class="text-gray-500">Reports — coming soon (Person 3).</p>
+
+<!-- Page header (design.md §5.1) -->
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Summary</p>
+    <h1 class="text-2xl font-bold text-gray-900 mt-0.5">Reports</h1>
+  </div>
+  {% comment %}
+  TODO (Person 3): CSV export link — wire date_from/date_to from context.
+  <a href="report_export?date_from=date_from|date:'Y-m-d'&date_to=date_to|date:'Y-m-d'"
+     class="border border-gray-200 text-gray-700 hover:border-gray-400 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+    Download CSV
+  </a>
+  {% endcomment %}
+</div>
+
+<!-- Preset range tabs (design.md §5.10) -->
+{% comment %}
+TODO (Person 3): Wire "with preset=request.GET.preset|default:'this_month'".
+Loop "for key, label in presets" — add presets list to context in ReportView.get_context_data:
+ctx['presets'] = [('this_week','This week'),('this_month','This month'),
+                  ('last_month','Last month'),('this_year','This year'),
+                  ('last_year','Last year'),('tax_year','Tax year')]
+{% endcomment %}
+<div class="flex flex-wrap gap-2 mb-6">
+  {% comment %}TODO (Person 3): Replace with dynamic loop — for key, label in presets — from design.md §5.10. Active preset gets bg-gray-900 text-white, others get bg-white text-gray-400 border-gray-200.{% endcomment %}
+  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">This week</span>
+  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">This month</span>
+  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">Last month</span>
+  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">This year</span>
+  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">Last year</span>
+  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">Tax year</span>
+</div>
+
+<!-- Summary stat cards (design.md §5.2) -->
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+
+  <div class="bg-white border border-gray-200 rounded-xl p-6">
+    <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Total income</p>
+    {# TODO (Person 3): {{ total_income }} #}
+    <p class="mt-4 text-3xl font-bold text-green-600">£0.00</p>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-xl p-6">
+    <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Total expenses</p>
+    {# TODO (Person 3): {{ total_expenses }} #}
+    <p class="mt-4 text-3xl font-bold text-red-600">£0.00</p>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-xl p-6">
+    <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Net balance</p>
+    {# TODO (Person 3): dynamic colour — if net_balance >= 0 text-green-600 else text-red-600 #}
+    <p class="mt-4 text-3xl font-bold text-gray-900">£0.00</p>
+  </div>
+
+</div>
+
+<!-- Category breakdown + Chart.js -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+  <!-- By-category table (design.md §5.4 simplified) -->
+  <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100">
+      <h2 class="text-base font-semibold text-gray-900">Expenses by category</h2>
+    </div>
+    <table class="min-w-full">
+      <thead>
+        <tr class="bg-gray-50 border-b border-gray-100">
+          <th class="px-6 py-3 text-left text-xs font-medium tracking-widest uppercase text-gray-400">Category</th>
+          <th class="px-6 py-3 text-right text-xs font-medium tracking-widest uppercase text-gray-400">Amount</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% comment %}
+        TODO (Person 3): Replace with:
+        for row in by_category
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-3 text-sm text-gray-900">row.category__name</td>
+            <td class="px-6 py-3 text-sm font-semibold text-right text-red-600">£row.total</td>
+          </tr>
+        empty
+          <tr><td colspan="2" class="px-6 py-10 text-center text-sm text-gray-400">No expense data.</td></tr>
+        endfor
+        {% endcomment %}
+        <tr>
+          <td colspan="2" class="px-6 py-10 text-center text-sm text-gray-400">
+            Category breakdown — Person 3: wire up the by_category queryset.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Bar chart (design.md §7) -->
+  <div class="bg-white border border-gray-200 rounded-xl p-6">
+    <h2 class="text-base font-semibold text-gray-900 mb-4">Top 5 expense categories</h2>
+    <canvas id="expenseChart" class="w-full" height="280"></canvas>
+    {% comment %}TODO (Person 3): Populate Chart.js with top_5_expense_categories from context. See design.md §7 for the complete Chart.js config block — put it in block extra_js.{% endcomment %}
+  </div>
+
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
-{# TODO (Person 3): Add Chart.js CDN script and initialise the bar chart here #}
+{% comment %}
+TODO (Person 3): Add Chart.js CDN + initialisation here.
+Copy the full script block from design.md §7.
+The canvas id is 'expenseChart'.
+Data comes from top_5_expense_categories in context — a queryset with category__name and total fields.
+{% endcomment %}
 {% endblock %}

@@ -1,53 +1,77 @@
 {% load tailwind_tags %}
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-50">
+<html lang="en" class="h-full bg-white">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Expenser{% endblock %}</title>
   {% tailwind_css %}
 </head>
-<body class="h-full">
+<body class="h-full text-gray-900 antialiased">
 
-<div class="min-h-full">
   <!-- Navigation -->
-  <nav class="bg-indigo-600">
+  <nav class="bg-white border-b border-gray-200">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="flex h-16 items-center justify-between">
+      <div class="flex h-14 items-center justify-between">
+
+        <!-- Logo + nav links -->
         <div class="flex items-center gap-8">
-          <a href="{% url 'dashboard' %}" class="text-white font-bold text-xl">Expenser</a>
+          <a href="{% url 'dashboard' %}" class="text-sm font-bold text-gray-900 tracking-tight">
+            Expenser
+          </a>
           {% if user.is_authenticated %}
-          <div class="flex gap-4 text-sm">
-            <a href="{% url 'entry_list' %}" class="text-indigo-200 hover:text-white">Entries</a>
-            <a href="{% url 'category_list' %}" class="text-indigo-200 hover:text-white">Categories</a>
-            <a href="{% url 'budget_list' %}" class="text-indigo-200 hover:text-white">Budgets</a>
-            <a href="{% url 'report' %}" class="text-indigo-200 hover:text-white">Reports</a>
+          <div class="flex items-center gap-6">
+            <a href="{% url 'dashboard' %}"
+               class="text-sm hover:text-gray-900 {% if request.resolver_match.url_name == 'dashboard' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+              Dashboard
+            </a>
+            <a href="{% url 'entry_list' %}"
+               class="text-sm hover:text-gray-900 {% if 'entry' in request.resolver_match.url_name|default:'' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+              Entries
+            </a>
+            <a href="{% url 'category_list' %}"
+               class="text-sm hover:text-gray-900 {% if 'category' in request.resolver_match.url_name|default:'' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+              Categories
+            </a>
+            <a href="{% url 'budget_list' %}"
+               class="text-sm hover:text-gray-900 {% if 'budget' in request.resolver_match.url_name|default:'' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+              Budgets
+            </a>
+            <a href="{% url 'report' %}"
+               class="text-sm hover:text-gray-900 {% if request.resolver_match.url_name == 'report' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+              Reports
+            </a>
           </div>
           {% endif %}
         </div>
+
+        <!-- User + logout -->
         {% if user.is_authenticated %}
-        <div class="flex items-center gap-4 text-sm">
-          <span class="text-indigo-200">{{ user.username }}</span>
+        <div class="flex items-center gap-4">
+          <span class="text-xs text-gray-400">{{ user.username }}</span>
           <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
-            <button type="submit" class="text-indigo-200 hover:text-white">Log out</button>
+            <button type="submit" class="text-xs text-gray-400 hover:text-gray-900 transition-colors">
+              Log out
+            </button>
           </form>
         </div>
         {% endif %}
+
       </div>
     </div>
   </nav>
 
-  <!-- Messages -->
+  <!-- Flash messages -->
   {% if messages %}
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4 space-y-2">
     {% for message in messages %}
-    <div class="rounded-md p-4
-      {% if message.tags == 'error' %}bg-red-50 text-red-800
-      {% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-800
-      {% elif message.tags == 'success' %}bg-green-50 text-green-800
-      {% else %}bg-blue-50 text-blue-800{% endif %}">
-      {{ message }}
+    <div class="flex items-center justify-between rounded-lg px-4 py-3 text-sm
+      {% if message.tags == 'success' %}bg-green-50 border border-green-200 text-green-800
+      {% elif message.tags == 'warning' %}bg-amber-50 border border-amber-200 text-amber-800
+      {% elif message.tags == 'error' %}bg-red-50 border border-red-200 text-red-800
+      {% else %}bg-blue-50 border border-blue-200 text-blue-800{% endif %}">
+      <span>{{ message }}</span>
     </div>
     {% endfor %}
   </div>
@@ -57,8 +81,7 @@
   <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
     {% block content %}{% endblock %}
   </main>
-</div>
 
-{% block extra_js %}{% endblock %}
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

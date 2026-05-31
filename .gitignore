@@ -1,3 +1,9 @@
+# Internal / AI assistant files — not for public repo
+design.md
+prd.md
+CLAUDE.md
+CLAUDE.local.md
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
