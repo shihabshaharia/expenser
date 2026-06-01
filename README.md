@@ -98,7 +98,7 @@ sudo systemctl start postgresql && sudo systemctl enable postgresql
 
 # 3. Create database and user
 sudo -u postgres psql -c "CREATE DATABASE expenser_db;"
-sudo -u postgres psql -c "CREATE USER expenser_user WITH PASSWORD 'StrongPass123!';"
+sudo -u postgres psql -c "CREATE USER expenser_user WITH PASSWORD 'expenser_pass';"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE expenser_db TO expenser_user;"
 sudo -u postgres psql -c "ALTER DATABASE expenser_db OWNER TO expenser_user;"
 

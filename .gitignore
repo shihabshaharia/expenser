@@ -1,3 +1,6 @@
+# Node
+node_modules/
+
 # Internal / AI assistant files — not for public repo
 design.md
 prd.md
