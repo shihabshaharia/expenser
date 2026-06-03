@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<!-- Page header (design.md §5.1) -->
+<!-- Page header -->
 <div class="flex items-center justify-between mb-6">
   <div>
     <p class="text-xs font-medium tracking-widest uppercase text-gray-400">This month</p>
@@ -15,53 +15,50 @@
   </a>
 </div>
 
-<!-- Budget progress cards (design.md §5.7) -->
+<!-- Budget progress cards -->
 <div class="space-y-4">
-  {% comment %}
-  TODO (Person 2): Replace the placeholder card with the real loop:
-  for budget in budgets
+  {% for budget in budgets %}
     <div class="bg-white border border-gray-200 rounded-xl p-5">
       <div class="flex items-center justify-between mb-3">
         <div>
-          <p class="text-sm font-semibold text-gray-900">budget.category.name</p>
-          <p class="text-xs text-gray-400 mt-0.5">£budget.spent spent of £budget.amount limit</p>
+          <p class="text-sm font-semibold text-gray-900">{{ budget.category.name }}</p>
+          <p class="text-xs text-gray-400 mt-0.5">
+            £{{ budget.spent }} spent of £{{ budget.amount }} limit
+          </p>
         </div>
         <div class="flex items-center gap-3">
           <span class="text-sm font-semibold
-            [text-red-600 if >=100, text-amber-600 if >=80, else text-gray-900]">
-            budget.percentage%
+            {% if budget.percentage >= 100 %}text-red-600
+            {% elif budget.percentage >= 80 %}text-amber-600
+            {% else %}text-gray-900{% endif %}">
+            {{ budget.percentage }}%
           </span>
-          <a href="budget_update budget.pk" class="text-xs text-gray-400 hover:text-gray-700">Edit</a>
-          <a href="budget_delete budget.pk" class="text-xs text-gray-400 hover:text-red-600">Delete</a>
+          <a href="{% url 'budget_update' budget.pk %}" class="text-xs text-gray-400 hover:text-gray-700">Edit</a>
+          <a href="{% url 'budget_delete' budget.pk %}" class="text-xs text-gray-400 hover:text-red-600">Delete</a>
         </div>
       </div>
+      <!-- Progress bar -->
       <div class="w-full bg-gray-200 rounded-full h-1.5">
         <div class="h-1.5 rounded-full transition-all duration-300
-          [bg-red-500 if >=100, bg-amber-400 if >=80, else bg-green-500]"
-             style="width: [min(budget.percentage, 100)]%">
+          {% if budget.percentage >= 100 %}bg-red-500
+          {% elif budget.percentage >= 80 %}bg-amber-400
+          {% else %}bg-green-500{% endif %}"
+             style="width: {% if budget.percentage > 100 %}100{% else %}{{ budget.percentage }}{% endif %}%">
         </div>
       </div>
     </div>
-  empty: (use the empty state below)
-  endfor
-
-  Note: budget.spent and budget.percentage must be computed in BudgetListView.get_context_data
-  using Entry.objects.filter(...).aggregate(Sum('amount')).
-  Emit messages.warning() when budget.percentage >= 80 — messages are shown by base.html.
-  {% endcomment %}
-
-  <!-- Empty state (design.md §5.8) — remove when loop is in place -->
-  <div class="bg-white border border-gray-200 rounded-xl">
-    <div class="text-center py-16">
-      <p class="text-sm font-medium text-gray-900">No budgets set for this month</p>
-      <p class="text-xs text-gray-400 mt-1">Person 2: wire up the budgets loop from context.</p>
-      <a href="{% url 'budget_create' %}"
-         class="mt-4 inline-block bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
-        + Add budget
-      </a>
+  {% empty %}
+    <div class="bg-white border border-gray-200 rounded-xl">
+      <div class="text-center py-16">
+        <p class="text-sm font-medium text-gray-900">No budgets set for this month</p>
+        <p class="text-xs text-gray-400 mt-1">Set a spending limit for each category you want to track.</p>
+        <a href="{% url 'budget_create' %}"
+           class="mt-4 inline-block bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+          + Add budget
+        </a>
+      </div>
     </div>
-  </div>
-
+  {% endfor %}
 </div>
 
 {% endblock %}
