@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+{% load expenser_tags %}
 {% block title %}Entries — Expenser{% endblock %}
 
 {% block content %}
 
-<!-- Page header (design.md §5.1) -->
+{# -----------------------------------------------------------------------
+   Page header
+   ----------------------------------------------------------------------- #}
 <div class="flex items-center justify-between mb-6">
   <div>
     <p class="text-xs font-medium tracking-widest uppercase text-gray-400">All transactions</p>
@@ -15,7 +18,9 @@
   </a>
 </div>
 
-<!-- Filter bar (design.md §5.6) -->
+{# -----------------------------------------------------------------------
+   Filter bar
+   ----------------------------------------------------------------------- #}
 <div class="bg-white border border-gray-200 rounded-xl p-4 mb-6">
   <form method="get" class="flex flex-wrap items-end gap-3">
 
@@ -34,8 +39,18 @@
       <select name="category"
               class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900">
         <option value="">All categories</option>
-        {# TODO (Person 2): Loop {% for cat in categories %} here — categories comes from get_context_data #}
+        {% for cat in categories %}
+          <option value="{{ cat.pk }}" {% if request.GET.category == cat.pk|stringformat:"s" %}selected{% endif %}>
+            {{ cat.name }}
+          </option>
+        {% endfor %}
       </select>
+    </div>
+
+    <div>
+      <label class="block text-xs font-medium text-gray-500 mb-1">Tag</label>
+      <input type="text" name="tag" value="{{ request.GET.tag }}" placeholder="e.g. holiday"
+             class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 w-32">
     </div>
 
     <div>
@@ -59,7 +74,11 @@
   </form>
 </div>
 
-<!-- Data table (design.md §5.4) -->
+{# -----------------------------------------------------------------------
+   Data table
+   Tags column uses the {% tag_pills %} inclusion tag (Person 3).
+   Amounts use the |currency filter (Person 3).
+   ----------------------------------------------------------------------- #}
 <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
   <table class="min-w-full">
     <thead>
@@ -68,70 +87,89 @@
         <th class="px-6 py-3 text-left text-xs font-medium tracking-widest uppercase text-gray-400">Type</th>
         <th class="px-6 py-3 text-left text-xs font-medium tracking-widest uppercase text-gray-400">Category</th>
         <th class="px-6 py-3 text-left text-xs font-medium tracking-widest uppercase text-gray-400">Description</th>
+        <th class="px-6 py-3 text-left text-xs font-medium tracking-widest uppercase text-gray-400">Tags</th>
         <th class="px-6 py-3 text-right text-xs font-medium tracking-widest uppercase text-gray-400">Amount</th>
         <th class="px-6 py-3"></th>
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-100">
-      {% comment %}
-      TODO (Person 2): Replace the row below with the full entries loop:
-      for entry in entries
+      {% for entry in entries %}
         <tr class="hover:bg-gray-50 transition-colors">
-          <td class="px-6 py-4 text-sm text-gray-500">entry.date</td>
+
+          <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+            {{ entry.date|date:"d M Y" }}
+          </td>
+
           <td class="px-6 py-4">
+            {# Pill badge for entry type #}
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-              [bg-green-100 text-green-700 if INCOME else bg-red-100 text-red-700]">
-              entry.get_entry_type_display
+                         {% if entry.entry_type == 'INCOME' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+              {{ entry.get_entry_type_display }}
             </span>
           </td>
-          <td class="px-6 py-4 text-sm text-gray-900">entry.category.name</td>
-          <td class="px-6 py-4 text-sm text-gray-500">entry.description|truncatechars:50</td>
-          <td class="px-6 py-4 text-sm font-semibold text-right
-            [text-green-600 if INCOME else text-red-600]">
-            [+ if INCOME else -]£entry.amount
+
+          <td class="px-6 py-4 text-sm text-gray-900">{{ entry.category.name }}</td>
+
+          <td class="px-6 py-4 text-sm text-gray-500 max-w-xs">
+            {{ entry.description|truncatechars:60 }}
           </td>
-          <td class="px-6 py-4 text-right text-sm space-x-3">
-            <a href="entry_update entry.pk" class="text-gray-400 hover:text-gray-900">Edit</a>
-            <a href="entry_delete entry.pk" class="text-gray-400 hover:text-red-600">Delete</a>
+
+          {# Tag pills rendered via the inclusion tag from expenser_tags #}
+          <td class="px-6 py-4 text-sm">
+            {% tag_pills entry %}
+          </td>
+
+          {# Amount with currency filter — green for income, red for expense #}
+          <td class="px-6 py-4 text-sm font-semibold text-right whitespace-nowrap
+                     {% if entry.entry_type == 'INCOME' %}text-green-600{% else %}text-red-600{% endif %}">
+            {% if entry.entry_type == 'INCOME' %}+{% else %}-{% endif %}{{ entry.amount|currency }}
+          </td>
+
+          <td class="px-6 py-4 text-right text-sm whitespace-nowrap space-x-3">
+            <a href="{% url 'entry_update' entry.pk %}" class="text-gray-400 hover:text-gray-900 transition-colors">Edit</a>
+            <a href="{% url 'entry_delete' entry.pk %}" class="text-gray-400 hover:text-red-600 transition-colors">Delete</a>
+          </td>
+
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="7" class="px-6 py-16 text-center">
+            <p class="text-sm font-medium text-gray-900">No entries found</p>
+            <p class="text-xs text-gray-400 mt-1">Try adjusting your filters or add a new entry.</p>
+            <a href="{% url 'entry_create' %}"
+               class="mt-4 inline-block bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+              + Add entry
+            </a>
           </td>
         </tr>
-      empty: (use the empty state below)
-      endfor
-      {% endcomment %}
-      <tr>
-        <td colspan="6" class="px-6 py-16 text-center">
-          <p class="text-sm font-medium text-gray-900">No entries yet</p>
-          <p class="text-xs text-gray-400 mt-1">Add your first entry to get started.</p>
-          <a href="{% url 'entry_create' %}"
-             class="mt-4 inline-block bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
-            + Add entry
-          </a>
-        </td>
-      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>
 
-<!-- Pagination (design.md §5.11) -->
-{% comment %}
-TODO (Person 2): Uncomment when ListView pagination is wired up.
-Replace this entire comment block with:
-
-if is_paginated
+{# -----------------------------------------------------------------------
+   Pagination — preserves all active filter params in page links
+   ----------------------------------------------------------------------- #}
+{% if is_paginated %}
 <div class="flex items-center justify-between mt-4 px-1">
-  <p class="text-xs text-gray-400">Page page_obj.number of page_obj.num_pages</p>
+  <p class="text-xs text-gray-400">
+    Page {{ page_obj.number }} of {{ page_obj.num_pages }}
+  </p>
   <div class="flex gap-2">
-    if page_obj.has_previous
-    <a href="?page=page_obj.previous_page_number"
-       class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-600 hover:border-gray-400">Previous</a>
-    endif
-    if page_obj.has_next
-    <a href="?page=page_obj.next_page_number"
-       class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-600 hover:border-gray-400">Next</a>
-    endif
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.entry_type %}&entry_type={{ request.GET.entry_type }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}"
+         class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-600 hover:border-gray-400 transition-colors">
+        &larr; Previous
+      </a>
+    {% endif %}
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if request.GET.entry_type %}&entry_type={{ request.GET.entry_type }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}"
+         class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-600 hover:border-gray-400 transition-colors">
+        Next &rarr;
+      </a>
+    {% endif %}
   </div>
 </div>
-endif
-{% endcomment %}
+{% endif %}
 
 {% endblock %}
