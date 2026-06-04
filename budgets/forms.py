@@ -7,12 +7,34 @@ from .models import Budget
 class BudgetForm(forms.ModelForm):
     """Form for creating/editing a monthly budget for an expense category."""
 
+    _INPUT_CLASS = (
+        'block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm '
+        'text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900'
+    )
+
     class Meta:
         model = Budget
         fields = ['category', 'amount', 'month']
         widgets = {
+            'category': forms.Select(attrs={'class': (
+                'block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm '
+                'text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900'
+            )}),
+            'amount': forms.NumberInput(attrs={
+                'class': (
+                    'block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm '
+                    'text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900'
+                ),
+                'step': '0.01', 'min': '0.01',
+            }),
             # type="month" renders a native YYYY-MM month picker in the browser
-            'month': forms.DateInput(attrs={'type': 'month'}),
+            'month': forms.DateInput(attrs={
+                'type': 'month',
+                'class': (
+                    'block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm '
+                    'text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900'
+                ),
+            }),
         }
 
     def __init__(self, *args, user=None, **kwargs):

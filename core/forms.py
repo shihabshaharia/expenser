@@ -9,12 +9,25 @@ from .models import Category, Entry, Tag
 # CategoryForm
 # ---------------------------------------------------------------------------
 
+_INPUT_CLASS = (
+    'block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm '
+    'text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900'
+)
+_SELECT_CLASS = _INPUT_CLASS
+
+
 class CategoryForm(forms.ModelForm):
     """Form for creating/editing a user-owned Category."""
 
     class Meta:
         model = Category
         fields = ['name', 'entry_type', 'icon', 'colour']
+        widgets = {
+            'name':       forms.TextInput(attrs={'class': _INPUT_CLASS}),
+            'entry_type': forms.Select(attrs={'class': _SELECT_CLASS}),
+            'icon':       forms.TextInput(attrs={'class': _INPUT_CLASS, 'placeholder': 'e.g. 🏠'}),
+            'colour':     forms.TextInput(attrs={'class': _INPUT_CLASS, 'placeholder': 'e.g. #ef4444'}),
+        }
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -32,12 +45,27 @@ class CategoryForm(forms.ModelForm):
 # EntryForm
 # ---------------------------------------------------------------------------
 
+_INPUT_CLASS = (
+    'block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm '
+    'text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900'
+)
+_SELECT_CLASS = _INPUT_CLASS
+_TEXTAREA_CLASS = (
+    'block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm '
+    'text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none'
+)
+_CHECKBOX_CLASS = 'rounded border-gray-300 text-gray-900 focus:ring-gray-900 h-4 w-4'
+
+
 class EntryForm(forms.ModelForm):
     """Form for creating/editing an Entry, including M2M tag input."""
 
     tag_input = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'work, holiday'}),
+        widget=forms.TextInput(attrs={
+            'placeholder': 'work, holiday',
+            'class': _INPUT_CLASS,
+        }),
         help_text='Comma-separated tags',
     )
 
@@ -47,7 +75,15 @@ class EntryForm(forms.ModelForm):
             'entry_type', 'amount', 'category', 'date',
             'description', 'is_recurring', 'recurrence_frequency',
         ]
-        widgets = {'date': forms.DateInput(attrs={'type': 'date'})}
+        widgets = {
+            'entry_type':            forms.Select(attrs={'class': _SELECT_CLASS}),
+            'amount':                forms.NumberInput(attrs={'class': _INPUT_CLASS, 'step': '0.01', 'min': '0.01'}),
+            'category':              forms.Select(attrs={'class': _SELECT_CLASS}),
+            'date':                  forms.DateInput(attrs={'type': 'date', 'class': _INPUT_CLASS}),
+            'description':           forms.Textarea(attrs={'class': _TEXTAREA_CLASS, 'rows': 3}),
+            'is_recurring':          forms.CheckboxInput(attrs={'class': _CHECKBOX_CLASS}),
+            'recurrence_frequency':  forms.Select(attrs={'class': _SELECT_CLASS}),
+        }
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
