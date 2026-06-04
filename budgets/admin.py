@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Budget
 
+//he
 
 @admin.register(Budget)
 class BudgetAdmin(admin.ModelAdmin):
