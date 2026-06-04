@@ -1,116 +1,258 @@
 {% extends "base.html" %}
+{% load expenser_tags %}
 {% block title %}Reports — Expenser{% endblock %}
 
 {% block content %}
 
-<!-- Page header (design.md §5.1) -->
+{# -----------------------------------------------------------------------
+   Page header + CSV export button
+   ----------------------------------------------------------------------- #}
 <div class="flex items-center justify-between mb-6">
   <div>
     <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Summary</p>
     <h1 class="text-2xl font-bold text-gray-900 mt-0.5">Reports</h1>
   </div>
-  {% comment %}
-  TODO (Person 3): CSV export link — wire date_from/date_to from context.
-  <a href="report_export?date_from=date_from|date:'Y-m-d'&date_to=date_to|date:'Y-m-d'"
-     class="border border-gray-200 text-gray-700 hover:border-gray-400 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+
+  {# CSV export — passes the active date range through as query params #}
+  <a href="{% url 'report_export' %}?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}"
+     class="inline-flex items-center gap-1.5 border border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-50 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+    </svg>
     Download CSV
   </a>
-  {% endcomment %}
 </div>
 
-<!-- Preset range tabs (design.md §5.10) -->
-{% comment %}
-TODO (Person 3): Wire "with preset=request.GET.preset|default:'this_month'".
-Loop "for key, label in presets" — add presets list to context in ReportView.get_context_data:
-ctx['presets'] = [('this_week','This week'),('this_month','This month'),
-                  ('last_month','Last month'),('this_year','This year'),
-                  ('last_year','Last year'),('tax_year','Tax year')]
-{% endcomment %}
+{# -----------------------------------------------------------------------
+   Preset range tab bar
+   Active preset = bg-gray-900 text-white
+   Inactive     = bg-white text-gray-500 border border-gray-200
+   ----------------------------------------------------------------------- #}
 <div class="flex flex-wrap gap-2 mb-6">
-  {% comment %}TODO (Person 3): Replace with dynamic loop — for key, label in presets — from design.md §5.10. Active preset gets bg-gray-900 text-white, others get bg-white text-gray-400 border-gray-200.{% endcomment %}
-  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">This week</span>
-  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">This month</span>
-  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">Last month</span>
-  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">This year</span>
-  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">Last year</span>
-  <span class="px-3 py-1.5 rounded-lg text-sm font-medium border bg-white text-gray-400 border-gray-200">Tax year</span>
+  {% for key, label in presets %}
+    <a href="?preset={{ key }}"
+       class="px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors
+              {% if preset == key %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-500 border-gray-200 hover:border-gray-400{% endif %}">
+      {{ label }}
+    </a>
+  {% endfor %}
+
+  {# Custom date range — inline form, shown as a mini collapsible row #}
+  <details class="relative">
+    <summary class="px-3 py-1.5 rounded-lg text-sm font-medium border cursor-pointer
+                    {% if preset == 'custom' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-500 border-gray-200 hover:border-gray-400{% endif %}
+                    list-none select-none">
+      Custom range
+    </summary>
+    <div class="absolute top-full left-0 mt-2 z-10 bg-white border border-gray-200 rounded-xl shadow-lg p-4 min-w-max">
+      <form method="get" class="flex items-end gap-3">
+        <input type="hidden" name="preset" value="custom">
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">From</label>
+          <input type="date" name="date_from" value="{{ date_from|date:'Y-m-d' }}"
+                 class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">To</label>
+          <input type="date" name="date_to" value="{{ date_to|date:'Y-m-d' }}"
+                 class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900">
+        </div>
+        <button type="submit"
+                class="bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors">
+          Apply
+        </button>
+      </form>
+    </div>
+  </details>
 </div>
 
-<!-- Summary stat cards (design.md §5.2) -->
+{# Date range subtitle #}
+<p class="text-xs text-gray-400 mb-6">
+  Showing data from <span class="font-medium text-gray-600">{{ date_from|date:"j N Y" }}</span>
+  to <span class="font-medium text-gray-600">{{ date_to|date:"j N Y" }}</span>
+</p>
+
+{# -----------------------------------------------------------------------
+   Summary stat cards
+   ----------------------------------------------------------------------- #}
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
 
+  {# Income card #}
   <div class="bg-white border border-gray-200 rounded-xl p-6">
     <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Total income</p>
-    {# TODO (Person 3): {{ total_income }} #}
-    <p class="mt-4 text-3xl font-bold text-green-600">£0.00</p>
+    <p class="mt-4 text-3xl font-bold text-green-600">{{ total_income|currency }}</p>
   </div>
 
+  {# Expenses card #}
   <div class="bg-white border border-gray-200 rounded-xl p-6">
-    <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Total expenses</p>
-    {# TODO (Person 3): {{ total_expenses }} #}
-    <p class="mt-4 text-3xl font-bold text-red-600">£0.00</p>
+    <p class="text-xs font-medium tracking-widests uppercase text-gray-400">Total expenses</p>
+    <p class="mt-4 text-3xl font-bold text-red-600">{{ total_expenses|currency }}</p>
   </div>
 
+  {# Net balance card — green when positive, red when negative #}
   <div class="bg-white border border-gray-200 rounded-xl p-6">
     <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Net balance</p>
-    {# TODO (Person 3): dynamic colour — if net_balance >= 0 text-green-600 else text-red-600 #}
-    <p class="mt-4 text-3xl font-bold text-gray-900">£0.00</p>
+    <p class="mt-4 text-3xl font-bold
+              {% if net_balance >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+      {{ net_balance|currency }}
+    </p>
   </div>
 
 </div>
 
-<!-- Category breakdown + Chart.js -->
+{# -----------------------------------------------------------------------
+   Two-column: category breakdown table  +  Chart.js bar chart
+   ----------------------------------------------------------------------- #}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-  <!-- By-category table (design.md §5.4 simplified) -->
+  {# --- Category breakdown table ---------------------------------------- #}
   <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-100">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
       <h2 class="text-base font-semibold text-gray-900">Expenses by category</h2>
+      {% if by_category %}
+        <span class="text-xs text-gray-400">{{ by_category|length }} categor{% if by_category|length == 1 %}y{% else %}ies{% endif %}</span>
+      {% endif %}
     </div>
     <table class="min-w-full">
       <thead>
         <tr class="bg-gray-50 border-b border-gray-100">
           <th class="px-6 py-3 text-left text-xs font-medium tracking-widest uppercase text-gray-400">Category</th>
           <th class="px-6 py-3 text-right text-xs font-medium tracking-widest uppercase text-gray-400">Amount</th>
+          <th class="px-6 py-3 text-right text-xs font-medium tracking-widest uppercase text-gray-400">Share</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
-        {% comment %}
-        TODO (Person 3): Replace with:
-        for row in by_category
-          <tr class="hover:bg-gray-50">
-            <td class="px-6 py-3 text-sm text-gray-900">row.category__name</td>
-            <td class="px-6 py-3 text-sm font-semibold text-right text-red-600">£row.total</td>
+        {% for row in by_category %}
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-3 text-sm text-gray-900">{{ row.category__name }}</td>
+            <td class="px-6 py-3 text-sm font-semibold text-right text-red-600">
+              {{ row.total|currency }}
+            </td>
+            <td class="px-6 py-3 text-sm text-right text-gray-400">
+              {{ row.total|percentage:total_expenses }}%
+            </td>
           </tr>
-        empty
-          <tr><td colspan="2" class="px-6 py-10 text-center text-sm text-gray-400">No expense data.</td></tr>
-        endfor
-        {% endcomment %}
-        <tr>
-          <td colspan="2" class="px-6 py-10 text-center text-sm text-gray-400">
-            Category breakdown — Person 3: wire up the by_category queryset.
-          </td>
-        </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="px-6 py-10 text-center text-sm text-gray-400">
+              No expense data for this period.
+            </td>
+          </tr>
+        {% endfor %}
       </tbody>
+      {% if by_category %}
+        <tfoot>
+          <tr class="bg-gray-50 border-t border-gray-200">
+            <td class="px-6 py-3 text-sm font-semibold text-gray-700">Total</td>
+            <td class="px-6 py-3 text-sm font-bold text-right text-red-600">{{ total_expenses|currency }}</td>
+            <td class="px-6 py-3 text-sm font-semibold text-right text-gray-400">100%</td>
+          </tr>
+        </tfoot>
+      {% endif %}
     </table>
   </div>
 
-  <!-- Bar chart (design.md §7) -->
+  {# --- Bar chart -------------------------------------------------------- #}
   <div class="bg-white border border-gray-200 rounded-xl p-6">
     <h2 class="text-base font-semibold text-gray-900 mb-4">Top 5 expense categories</h2>
-    <canvas id="expenseChart" class="w-full" height="280"></canvas>
-    {% comment %}TODO (Person 3): Populate Chart.js with top_5_expense_categories from context. See design.md §7 for the complete Chart.js config block — put it in block extra_js.{% endcomment %}
+    {% if top_5_expense_categories %}
+      <canvas id="expenseChart" class="w-full" height="280"></canvas>
+    {% else %}
+      <div class="flex items-center justify-center h-48 text-sm text-gray-400">
+        No expense data available for this period.
+      </div>
+    {% endif %}
   </div>
 
 </div>
 
 {% endblock %}
 
+
+{# -------------------------------------------------------------------------
+   Chart.js — loaded in the extra_js block so it runs after the DOM is ready.
+   Data is safely serialised into JS variables using the json_script tag
+   to avoid XSS risks from raw category names.
+   ------------------------------------------------------------------------- #}
 {% block extra_js %}
-{% comment %}
-TODO (Person 3): Add Chart.js CDN + initialisation here.
-Copy the full script block from design.md §7.
-The canvas id is 'expenseChart'.
-Data comes from top_5_expense_categories in context — a queryset with category__name and total fields.
-{% endcomment %}
+{% if top_5_expense_categories %}
+
+{# Serialise Python lists to safe inline JSON #}
+{{ top_5_expense_categories|json_script:"chart-data-raw" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // Deserialise the server-side data injected via json_script
+  const rawData   = JSON.parse(document.getElementById('chart-data-raw').textContent);
+  const labels    = rawData.map(function (r) { return r.category__name; });
+  const amounts   = rawData.map(function (r) { return parseFloat(r.total); });
+
+  // Colour palette — one shade per bar (cycles if more than 5)
+  const palette = [
+    'rgba(239, 68, 68,  0.85)',   // red-500
+    'rgba(249, 115, 22, 0.85)',   // orange-500
+    'rgba(234, 179, 8,  0.85)',   // yellow-500
+    'rgba(168, 85, 247, 0.85)',   // purple-500
+    'rgba(59, 130, 246, 0.85)',   // blue-500
+  ];
+
+  const ctx = document.getElementById('expenseChart');
+  if (!ctx) return;
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Expenses (£)',
+        data: amounts,
+        backgroundColor: palette.slice(0, labels.length),
+        borderRadius: 6,
+        borderSkipped: false,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return ' £' + context.parsed.y.toLocaleString('en-GB', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              });
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            font: { size: 12 },
+            color: '#6b7280',  // gray-500
+          },
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: '#f3f4f6' },  // gray-100
+          ticks: {
+            font: { size: 12 },
+            color: '#6b7280',
+            callback: function (value) {
+              return '£' + value.toLocaleString('en-GB');
+            },
+          },
+        },
+      },
+    },
+  });
+})();
+</script>
+{% endif %}
 {% endblock %}
