@@ -17,22 +17,29 @@
     <form method="post" class="space-y-5">
       {% csrf_token %}
 
-      {% comment %}
-      TODO (Person 2): Render the BudgetForm here.
-      for field in form
+      {% for field in form %}
         <div>
-          <label for="field.id_for_label"
-                 class="block text-sm font-medium text-gray-700 mb-1">field.label</label>
-          if field.help_text: <p class="text-xs text-gray-400 mb-1">field.help_text</p>
-          field (rendered widget)
-          if field.errors: <p class="mt-1 text-xs text-red-600">field.errors|join:", "</p>
+          <label for="{{ field.id_for_label }}"
+                 class="block text-sm font-medium text-gray-700 mb-1">
+            {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+          </label>
+          {% if field.help_text %}
+            <p class="text-xs text-gray-400 mb-1">{{ field.help_text }}</p>
+          {% endif %}
+          {{ field }}
+          {% if field.errors %}
+            {% for error in field.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
         </div>
-      endfor
+      {% endfor %}
 
-      Note: the month field uses type="month" widget — renders a native month picker (YYYY-MM).
-      Django saves this as the first day of the selected month — handle this in BudgetForm.clean().
-      {% endcomment %}
-      <p class="text-sm text-gray-400">Budget form — Person 2: render the form loop here.</p>
+      {% if form.non_field_errors %}
+        <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3">
+          <p class="text-sm text-red-600">{{ form.non_field_errors|join:", " }}</p>
+        </div>
+      {% endif %}
 
       <div class="flex items-center gap-3 pt-2 border-t border-gray-100">
         <button type="submit"
