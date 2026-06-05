@@ -40,10 +40,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )
         net_balance = total_income - total_expenses
 
-        # 10 most recent entries
+        # 10 most recent entries — prefetch tags to avoid N+1 with tag_pills
         recent_entries = (
             Entry.objects.filter(user=user)
             .select_related('category')
+            .prefetch_related('tags')
             .order_by('-date', '-created_at')[:10]
         )
 
