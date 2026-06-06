@@ -58,6 +58,7 @@
 \titleformat{\chapter}[display]
   {\normalfont\huge\bfseries\color{darkbg}}
   {\color{primary}\chaptertitlename\ \thechapter}{12pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
 \titleformat{\section}
   {\normalfont\Large\bfseries\color{darkbg}}{\thesection}{1em}{}
 \titleformat{\subsection}
@@ -155,6 +156,25 @@ Mahfuz Iqram Sunny & 2023200010034 \\
 \newpage
 
 % ══════════════════════════════════════════════════════════════════════════════
+%  ABSTRACT
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+This report documents the design, development, and implementation of \textbf{Expenser}, a web-based personal finance management application built as part of the CSE474.3 Software Development and Project Management Lab at Southeast University.
+
+Expenser allows registered users to record daily income and expense transactions, organise them by category and tag, set monthly spending budgets per category, and generate financial reports over flexible date ranges. Reports can also be exported as CSV files. The application is built using Python 3.12 and Django 5.2 on the backend, PostgreSQL 16 as the database, and Tailwind CSS for the frontend. It runs on a Linux virtual machine environment.
+
+The project was developed by a team of three students using an Agile methodology. Work was split across two sprints: the first sprint covered the initial development of all features, and the second sprint focused on testing, bug fixing, and refining the application based on what we found after running everything together for the first time.
+
+The source code is publicly available at:
+\begin{center}
+\url{https://github.com/shihabshaharia/expenser}
+\end{center}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
 \chapter{Introduction}
 % ══════════════════════════════════════════════════════════════════════════════
 
@@ -177,47 +197,103 @@ The application is built using Python and Django on the backend, PostgreSQL as t
 \chapter{Project Planning}
 % ══════════════════════════════════════════════════════════════════════════════
 
-\section{Development Methodology}
+\section{Development Methodology --- Agile}
 
-We used an Agile approach for this project. Since we were three people working on different parts at the same time, Agile made sense because we could work in parallel and merge our work regularly through GitHub pull requests. A strict Waterfall approach would not have worked well here because we needed to adjust things as we went.
+For this project we chose an \textbf{Agile} development approach rather than Waterfall. The main reason is that with three people working in parallel, we could not afford to wait for one phase to fully finish before starting the next. Requirements also changed slightly as we went --- for example, the dashboard layout was redesigned after we saw how the data actually looked, and the entry form was updated to filter categories by type after we tested it. These kinds of mid-development adjustments are exactly what Agile is built for.
 
-We split the work into three rough sprints, each roughly one to two weeks:
+With a Waterfall approach we would have had to plan every single detail before writing any code, which is unrealistic for a university group project where everyone is learning the framework at the same time.
 
-\begin{table}[H]
+\subsection{Why Agile Suited This Project}
+
+\begin{itemize}
+  \item We had three developers working on separate features simultaneously, which maps naturally to Agile's parallel workstream model.
+  \item Features were developed, merged, and tested incrementally rather than all at once at the end.
+  \item When something was not working as expected (for example, template rendering bugs or form validation issues), we could fix it in the next iteration without it blocking everyone else.
+  \item The project scope was roughly defined at the start, but the exact implementation details evolved as we built and tested things.
+\end{itemize}
+
+\subsection{Key Agile Principles We Applied}
+
+\begin{itemize}
+  \item \textbf{Iterative delivery} --- We delivered working features at the end of each sprint rather than waiting until the very end.
+  \item \textbf{Continuous integration} --- Each person worked on a named branch and submitted a pull request when their feature was ready. The main branch always had working code.
+  \item \textbf{Responding to change} --- When we found issues during testing (like the budget currency showing the wrong symbol, or the category filter not working), we went back and fixed them in Sprint 2 rather than leaving them.
+  \item \textbf{Team collaboration} --- Decisions about design and implementation were made as a group via WhatsApp and quick meetings, not handed down by one person.
+\end{itemize}
+
+\section{Sprint Plan}
+
+We organised the project into two sprints. The first sprint covered all the initial development. The second sprint was focused on testing, fixing problems we found, and refining the application based on what we saw after running it for the first time.
+
+\subsection{Sprint 1 --- Initial Development (June 1--3, 2026)}
+
+The goal of Sprint 1 was to get a fully working first version of the application. All three team members worked on their assigned modules in parallel on separate GitHub branches.
+
+\begin{table}[htbp]
 \centering
-\begin{tabular}{|c|p{3.5cm}|p{8cm}|}
-\hline
-\textbf{Sprint} & \textbf{Who} & \textbf{What was done} \\
-\hline
-1 & Shihab & Project setup, database models, admin, authentication, base templates, category seeding \\
-\hline
-2 & Abid & Entry, Category, Budget views and forms, filtering, pagination \\
-\hline
-3 & Mahfuz & Reports module, CSV export, custom template tags, Chart.js charts \\
-\hline
+\begin{tabular}{@{}lp{10cm}@{}}
+\toprule
+\textbf{Who} & \textbf{Tasks completed} \\
+\midrule
+Shihab & Django project setup, PostgreSQL config, all database models and migrations, Django admin, custom User model, registration and login views, post-save signal for category seeding, base HTML templates, dashboard view with ORM aggregations \\[4pt]
+Mahfuz & ReportView with date-range logic, CSV export view, custom template tag library (currency filter, percentage filter, tag\_pills inclusion tag, category colour filter), Chart.js area chart and donut chart in the report template \\[4pt]
+Abid   & Entry CRUD views and EntryForm with validation, Category CRUD views, Budget CRUD views and BudgetForm, entry list filtering by type/category/tag/date, pagination, process\_recurring management command \\
+\bottomrule
 \end{tabular}
-\caption{Sprint plan}
+\caption{Sprint 1 deliverables}
 \end{table}
+
+At the end of Sprint 1, each person submitted a pull request to the main branch. These were reviewed and merged on June 4, 2026. After merging, we ran the full application together for the first time and noted a list of things to fix.
+
+\subsection{Sprint 2 --- Testing, Fixing, and Refining (June 4--6, 2026)}
+
+Sprint 2 is a good example of Agile's iterative nature. After merging everyone's work in Sprint 1, we tested the application properly and found several issues. These were not things we could have caught earlier because they only appeared when all the parts were running together.
+
+Issues found and fixed in Sprint 2:
+
+\begin{itemize}
+  \item \textbf{Template rendering errors} on the dashboard and reports pages caused by multi-line Django comment syntax that does not support spanning across lines. Fixed by converting all \texttt{\{{\#} ... \#\}} comments to \texttt{\{\% comment \%\}...\{\% endcomment \%\}} blocks.
+  \item \textbf{Currency symbol} was showing as GBP (£) instead of BDT (Tk.). Updated the currency filter and all Chart.js tooltip callbacks.
+  \item \textbf{Budget admin} had a Python syntax error from a JavaScript-style \texttt{//} comment accidentally left in the file. Fixed.
+  \item \textbf{Dashboard charts} were not rendering side by side on the page. Fixed by replacing compiled Tailwind grid classes with inline CSS grid styles.
+  \item \textbf{Category colour avatars} were invisible on the budget and entry list pages because the dynamic Tailwind class names were not included in the compiled CSS output. Fixed by adding a \texttt{category\_color\_hex} filter that returns a hex colour value for use in inline styles.
+  \item \textbf{Entry form} category dropdown was not filtering by type. Added JavaScript to show only income categories when Income is selected and only expense categories when Expense is selected.
+  \item \textbf{Merge conflicts} between branches were resolved collaboratively, keeping the best version of each change.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lp{10cm}@{}}
+\toprule
+\textbf{Who} & \textbf{Sprint 2 work} \\
+\midrule
+Shihab & Fixed template comment bugs across all pages, redesigned dashboard layout, added sparkline charts to stat cards, rebuilt login and register pages as standalone templates \\[4pt]
+Mahfuz & Fixed currency symbol in template tags and chart callbacks, fixed category colour hex filter, resolved template tag errors in report page \\[4pt]
+Abid   & Fixed budget admin syntax error, updated entry form with client-side category filtering, wired drawer system for category and budget forms \\
+\bottomrule
+\end{tabular}
+\caption{Sprint 2 deliverables}
+\end{table}
+
+This back-and-forth between building and fixing is one of the main strengths of Agile. In a Waterfall project, these bugs would only have been discovered at the very end during a final testing phase, which would have left very little time to fix them. Because we were testing after each sprint, we had time to go back and make things right.
 
 \section{Task Distribution}
 
-We divided the work based on Django's natural structure. Each person owned one layer of the application:
+Each team member owned a clear part of the codebase, which reduced conflicts and made parallel development easier:
 
 \begin{itemize}
-  \item \textbf{Shihab Shaharia} -- Project structure, models, authentication, admin, dashboard, UI templates
-  \item \textbf{Abid Ahmed Angkon} -- All CRUD views and forms for entries, categories, and budgets
-  \item \textbf{Mahfuz Iqram Sunny} -- Reports, CSV export, custom template tags, charts
+  \item \textbf{Shihab Shaharia} --- Project structure, models, authentication, admin, dashboard, all HTML templates and UI
+  \item \textbf{Mahfuz Iqram Sunny} --- Reports, CSV export, custom template tags, Chart.js visualisations
+  \item \textbf{Abid Ahmed Angkon} --- All CRUD views and forms for entries, categories, and budgets
 \end{itemize}
 
-We used GitHub for version control. Each person worked on their own branch and submitted pull requests when features were ready. The main branch was kept stable at all times.
-
-\section{Tools Used for Planning}
+\section{Tools Used}
 
 \begin{itemize}
-  \item GitHub Issues and PRs for task tracking and code review
-  \item WhatsApp group for quick communication
-  \item Shared Google Doc for initial planning notes
-  \item draw.io for the ER diagram draft
+  \item \textbf{GitHub} --- version control, branching, pull requests, code review
+  \item \textbf{WhatsApp} --- quick team communication and coordination
+  \item \textbf{Google Docs} --- shared planning notes and task checklist
+  \item \textbf{draw.io} --- initial ER diagram sketch before implementing models
 \end{itemize}
 
 % ══════════════════════════════════════════════════════════════════════════════
@@ -437,7 +513,7 @@ urlpatterns = [
 
 The application has five main models. All models filter data by the logged-in user, so one user never sees another user's data.
 
-\begin{table}[H]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{|l|p{10cm}|}
 \hline
@@ -455,82 +531,9 @@ Budget   & A monthly spending limit for one category \\
 
 \section{Entity-Relationship Diagram}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[node distance=0.0cm]
-
-  % User
-  \node[entity] (user_h) {User};
-  \node[attr, below=0pt of user_h] (u1) {\textbf{id} \hfill PK};
-  \node[attr, below=0pt of u1]     (u2) {username};
-  \node[attr, below=0pt of u2]     (u3) {email};
-  \node[attr, below=0pt of u3]     (u4) {password};
-  \begin{scope}[on background layer]
-    \node[fit=(user_h)(u1)(u2)(u3)(u4), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (user_box) {};
-  \end{scope}
-
-  % Category
-  \node[entity, right=5cm of user_h] (cat_h) {Category};
-  \node[attr, below=0pt of cat_h] (c1) {\textbf{id} \hfill PK};
-  \node[attr, below=0pt of c1]    (c2) {user\_id \hfill FK};
-  \node[attr, below=0pt of c2]    (c3) {name};
-  \node[attr, below=0pt of c3]    (c4) {entry\_type};
-  \begin{scope}[on background layer]
-    \node[fit=(cat_h)(c1)(c2)(c3)(c4), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (cat_box) {};
-  \end{scope}
-
-  % Entry
-  \node[entity, right=5cm of cat_h] (ent_h) {Entry};
-  \node[attr, below=0pt of ent_h] (e1) {\textbf{id} \hfill PK};
-  \node[attr, below=0pt of e1]    (e2) {user\_id \hfill FK};
-  \node[attr, below=0pt of e2]    (e3) {category\_id \hfill FK};
-  \node[attr, below=0pt of e3]    (e4) {entry\_type};
-  \node[attr, below=0pt of e4]    (e5) {amount};
-  \node[attr, below=0pt of e5]    (e6) {date};
-  \node[attr, below=0pt of e6]    (e7) {description};
-  \node[attr, below=0pt of e7]    (e8) {is\_recurring};
-  \begin{scope}[on background layer]
-    \node[fit=(ent_h)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (ent_box) {};
-  \end{scope}
-
-  % Tag
-  \node[entity, below=3.2cm of cat_h] (tag_h) {Tag};
-  \node[attr, below=0pt of tag_h] (t1) {\textbf{id} \hfill PK};
-  \node[attr, below=0pt of t1]    (t2) {user\_id \hfill FK};
-  \node[attr, below=0pt of t2]    (t3) {name};
-  \begin{scope}[on background layer]
-    \node[fit=(tag_h)(t1)(t2)(t3), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (tag_box) {};
-  \end{scope}
-
-  % Budget
-  \node[entity, above=2cm of ent_h] (bud_h) {Budget};
-  \node[attr, below=0pt of bud_h] (b1) {\textbf{id} \hfill PK};
-  \node[attr, below=0pt of b1]    (b2) {user\_id \hfill FK};
-  \node[attr, below=0pt of b2]    (b3) {category\_id \hfill FK};
-  \node[attr, below=0pt of b3]    (b4) {amount};
-  \node[attr, below=0pt of b4]    (b5) {month};
-  \begin{scope}[on background layer]
-    \node[fit=(bud_h)(b1)(b2)(b3)(b4)(b5), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (bud_box) {};
-  \end{scope}
-
-  % Entry_Tag
-  \node[entity, below=3.2cm of ent_h] (et_h) {Entry\_Tag};
-  \node[attr, below=0pt of et_h] (et1) {entry\_id \hfill FK};
-  \node[attr, below=0pt of et1]  (et2) {tag\_id \hfill FK};
-  \begin{scope}[on background layer]
-    \node[fit=(et_h)(et1)(et2), draw=accent!50, rounded corners=4pt, fill=accent!5, inner sep=2pt] (et_box) {};
-  \end{scope}
-
-  % Relations
-  \draw[arrow, thick] (user_box.east) -- node[above,font=\tiny]{owns} (cat_box.west);
-  \draw[arrow, thick] (user_box.east) to[bend right=18] node[below,font=\tiny]{owns} (tag_box.west);
-  \draw[arrow, thick] (user_box.east) to[bend left=12]  node[above,font=\tiny]{owns} (bud_box.west);
-  \draw[arrow, thick] (cat_box.east)  -- node[above,font=\tiny]{categorises} (ent_box.west);
-  \draw[arrow, thick] (user_box)      to[bend left=8]   node[above,font=\tiny]{owns} (ent_box.west);
-  \draw[arrow, thick] (cat_box.east)  to[bend left=15]  node[right,font=\tiny]{budgeted} (bud_box.south);
-  \draw[arrow, thick] (ent_box.south) -- node[right,font=\tiny]{has} (et_box.north);
-  \draw[arrow, thick] (tag_box.east)  -- node[above,font=\tiny]{applied to} (et_box.west);
-\end{tikzpicture}
+\includegraphics[width=\linewidth]{er_diagram.png}
 \caption{Entity-Relationship Diagram}
 \end{figure}
 
@@ -641,15 +644,15 @@ We created a custom template tag library in \texttt{core/templatetags/expenser\_
 \chapter{Team Contributions}
 % ══════════════════════════════════════════════════════════════════════════════
 
-\begin{table}[H]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Name} & \textbf{Student ID} & \textbf{Role} \\
 \hline
 Shihab Shaharia    & 2023100010136 & Person 1 \\
-Abid Ahmed Angkon  & 2023200010039 & Person 2 \\
-Mahfuz Iqram Sunny & 2023200010034 & Person 3 \\
+Mahfuz Iqram Sunny & 2023200010034 & Person 2 \\
+Abid Ahmed Angkon  & 2023200010039 & Person 3 \\
 \hline
 \end{tabular}
 \end{table}
@@ -667,7 +670,18 @@ Mahfuz Iqram Sunny & 2023200010034 & Person 3 \\
   \item Managed the GitHub repository, reviewed pull requests, and resolved merge conflicts
 \end{itemize}
 
-\section{Abid Ahmed Angkon --- Person 2}
+\section{Mahfuz Iqram Sunny --- Person 2}
+
+\begin{itemize}
+  \item Built the ReportView with all date range presets and ORM aggregations
+  \item Implemented the CSV export using Python's built-in csv module
+  \item Wrote all custom template tags: \texttt{currency}, \texttt{percentage}, \texttt{tag\_pills}, \texttt{category\_color\_hex}
+  \item Set up Chart.js for the area trend chart, donut chart, and sparkline cards on the dashboard
+  \item Designed and styled the reports page template
+  \item Helped with UI adjustments across the entry list and category pages
+\end{itemize}
+
+\section{Abid Ahmed Angkon --- Person 3}
 
 \begin{itemize}
   \item Implemented all Entry views (list, create, update, delete) using Django CBVs
@@ -680,15 +694,82 @@ Mahfuz Iqram Sunny & 2023200010034 & Person 3 \\
   \item Wired up the slide-over drawer for add/edit forms
 \end{itemize}
 
-\section{Mahfuz Iqram Sunny --- Person 3}
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Application Screenshots}
+% ══════════════════════════════════════════════════════════════════════════════
 
-\begin{itemize}
-  \item Built the ReportView with all date range presets and ORM aggregations
-  \item Implemented the CSV export using Python's built-in csv module
-  \item Wrote all custom template tags: \texttt{currency}, \texttt{percentage}, \texttt{tag\_pills}, \texttt{category\_color\_hex}
-  \item Set up Chart.js for the area trend chart, donut chart, and sparkline cards on the dashboard
-  \item Designed and styled the reports page template
-  \item Helped with UI adjustments across the entry list and category pages
+The following screenshots show the final working application running on the local development server.
+
+\section{Dashboard}
+
+The dashboard shows the monthly income, expense, and net balance stat cards with sparkline charts, a 30-day area trend chart, a donut chart for expenses by category, a recent entries table, and a budget progress panel on the right.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{ss_dashboard.jpeg}
+\caption{Dashboard page}
+\end{figure}
+
+\section{Entries}
+
+The entries page lists all transactions with filtering by type, category, tag, and date range. Each row shows the date, type badge, category avatar, description, and amount coloured green for income and red for expense.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{ss_entries.jpeg}
+\caption{Entries list page with filters}
+\end{figure}
+
+\section{Categories}
+
+The categories page splits all categories into Income and Expense sections, each with a coloured letter avatar, type badge, and Edit/Delete actions.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{ss_categories.jpeg}
+\caption{Categories management page}
+\end{figure}
+
+\section{Budgets}
+
+The budgets page shows each monthly budget with a progress bar indicating how much of the limit has been spent. The colour changes from green to amber at 80\% and red when the limit is exceeded.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{ss_budgets.jpeg}
+\caption{Budgets page with progress bars}
+\end{figure}
+
+\section{Reports}
+
+The reports page allows selecting a date range preset and shows total income, expenses, and net balance for the period. A bar chart breaks down the top expense categories. Reports can be downloaded as a CSV file.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{ss_reports.jpeg}
+\caption{Reports page with date range selector and bar chart}
+\end{figure}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Future Work}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The current version of Expenser covers all the core requirements of the project. However, there are several features we discussed during development that we did not have time to implement. These would be good additions in a future version:
+
+\begin{itemize}[itemsep=5pt]
+  \item \textbf{PDF report export} --- Currently reports can only be downloaded as CSV. Adding PDF export using a library like WeasyPrint would make the reports more presentable and easier to share.
+
+  \item \textbf{Email notifications} --- The budget warning system currently only shows alerts on the page. It would be more useful to send an email to the user when they reach 80\% or exceed their budget limit for a category.
+
+  \item \textbf{Automated recurring entry processing} --- The \texttt{process\_recurring} management command exists but has to be run manually. Scheduling it with a cron job on the Linux server would make recurring entries fully automatic.
+
+  \item \textbf{Mobile responsive layout} --- The application works on desktop but the layout breaks on smaller screens. Improving the responsive design with Tailwind's mobile breakpoints would make it usable on phones.
+
+  \item \textbf{User profile page} --- Currently users cannot change their username, email, or password from within the app. Adding a profile settings page would make account management easier.
+
+  \item \textbf{Multi-currency support} --- Right now everything is in BDT. Allowing users to select their currency and optionally converting between currencies using an external API would make the app more internationally useful.
+
+  \item \textbf{Automated tests} --- We did all our testing manually. Writing a proper test suite using \texttt{pytest-django} would make it easier to catch regressions when adding new features in the future.
 \end{itemize}
 
 % ══════════════════════════════════════════════════════════════════════════════
@@ -699,10 +780,16 @@ We built Expenser as a working personal finance tracker using Django and Postgre
 
 Working as a team through GitHub taught us how to manage branches, review each other's code, and merge work without breaking things. We ran into a few issues along the way, like resolving merge conflicts and debugging template rendering problems, but we sorted them out as we went.
 
-The application covers everything that was required: user authentication, transaction tracking, category and budget management, reports, and CSV export. It runs on a Linux virtual machine and the setup process is documented in this report.
+The application covers all the core requirements: user authentication, transaction tracking, category and budget management, financial reports, and CSV export. It runs on a Linux virtual machine and the full setup process is documented in this report. The project gave us practical experience in team-based software development using Agile, which we think is the most valuable thing we took from this course.
 
-\vspace{0.5cm}
-\textbf{Repository:} \url{https://github.com/shihabshaharia/expenser}
+\vspace{0.8cm}
+
+\begin{center}
+\begin{tabular}{@{}rl@{}}
+\textbf{Git Repository:} & \url{https://github.com/shihabshaharia/expenser} \\[4pt]
+\textbf{Access:}         & Public repository --- no credentials required \\
+\end{tabular}
+\end{center}
 
 \begin{thebibliography}{9}
 \bibitem{django} Django Software Foundation, \textit{Django Documentation}, version 5.2. \url{https://docs.djangoproject.com}
