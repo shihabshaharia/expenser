@@ -236,8 +236,8 @@ The goal of Sprint 1 was to get a fully working first version of the application
 \textbf{Who} & \textbf{Tasks completed} \\
 \midrule
 Shihab & Django project setup, PostgreSQL config, all database models and migrations, Django admin, custom User model, registration and login views, post-save signal for category seeding, base HTML templates, dashboard view with ORM aggregations \\[4pt]
-Mahfuz & ReportView with date-range logic, CSV export view, custom template tag library (currency filter, percentage filter, tag\_pills inclusion tag, category colour filter), Chart.js area chart and donut chart in the report template \\[4pt]
-Abid   & Entry CRUD views and EntryForm with validation, Category CRUD views, Budget CRUD views and BudgetForm, entry list filtering by type/category/tag/date, pagination, process\_recurring management command \\
+Mahfuz & Entry CRUD views and EntryForm with validation, Category CRUD views, Budget CRUD views and BudgetForm, entry list filtering by type/category/tag/date, pagination, process\_recurring management command \\[4pt]
+Abid   & ReportView with date-range logic, CSV export view, custom template tag library (currency filter, percentage filter, tag\_pills inclusion tag, category colour filter), Chart.js area chart and donut chart in the report template \\
 \bottomrule
 \end{tabular}
 \caption{Sprint 1 deliverables}
@@ -268,8 +268,8 @@ Issues found and fixed in Sprint 2:
 \textbf{Who} & \textbf{Sprint 2 work} \\
 \midrule
 Shihab & Fixed template comment bugs across all pages, redesigned dashboard layout, added sparkline charts to stat cards, rebuilt login and register pages as standalone templates \\[4pt]
-Mahfuz & Fixed currency symbol in template tags and chart callbacks, fixed category colour hex filter, resolved template tag errors in report page \\[4pt]
-Abid   & Fixed budget admin syntax error, updated entry form with client-side category filtering, wired drawer system for category and budget forms \\
+Mahfuz & Fixed budget admin syntax error, updated entry form with client-side category filtering, wired drawer system for category and budget forms \\[4pt]
+Abid   & Fixed currency symbol in template tags and chart callbacks, fixed category colour hex filter, resolved template tag errors in report page \\
 \bottomrule
 \end{tabular}
 \caption{Sprint 2 deliverables}
@@ -283,8 +283,8 @@ Each team member owned a clear part of the codebase, which reduced conflicts and
 
 \begin{itemize}
   \item \textbf{Shihab Shaharia} --- Project structure, models, authentication, admin, dashboard, all HTML templates and UI
-  \item \textbf{Mahfuz Iqram Sunny} --- Reports, CSV export, custom template tags, Chart.js visualisations
-  \item \textbf{Abid Ahmed Angkon} --- All CRUD views and forms for entries, categories, and budgets
+  \item \textbf{Mahfuz Iqram Sunny} --- All CRUD views and forms for entries, categories, and budgets
+  \item \textbf{Abid Ahmed Angkon} --- Reports, CSV export, custom template tags, Chart.js visualisations
 \end{itemize}
 
 \section{Tools Used}
@@ -673,17 +673,6 @@ Abid Ahmed Angkon  & 2023200010039 & Person 3 \\
 \section{Mahfuz Iqram Sunny --- Person 2}
 
 \begin{itemize}
-  \item Built the ReportView with all date range presets and ORM aggregations
-  \item Implemented the CSV export using Python's built-in csv module
-  \item Wrote all custom template tags: \texttt{currency}, \texttt{percentage}, \texttt{tag\_pills}, \texttt{category\_color\_hex}
-  \item Set up Chart.js for the area trend chart, donut chart, and sparkline cards on the dashboard
-  \item Designed and styled the reports page template
-  \item Helped with UI adjustments across the entry list and category pages
-\end{itemize}
-
-\section{Abid Ahmed Angkon --- Person 3}
-
-\begin{itemize}
   \item Implemented all Entry views (list, create, update, delete) using Django CBVs
   \item Built the EntryForm with field-level and cross-field validation
   \item Implemented all Category views and CategoryForm
@@ -692,6 +681,17 @@ Abid Ahmed Angkon  & 2023200010039 & Person 3 \\
   \item Added entry filtering by type, category, tag, and date range
   \item Wrote the \texttt{process\_recurring} management command
   \item Wired up the slide-over drawer for add/edit forms
+\end{itemize}
+
+\section{Abid Ahmed Angkon --- Person 3}
+
+\begin{itemize}
+  \item Built the ReportView with all date range presets and ORM aggregations
+  \item Implemented the CSV export using Python's built-in csv module
+  \item Wrote all custom template tags: \texttt{currency}, \texttt{percentage}, \texttt{tag\_pills}, \texttt{category\_color\_hex}
+  \item Set up Chart.js for the area trend chart, donut chart, and sparkline cards on the dashboard
+  \item Designed and styled the reports page template
+  \item Helped with UI adjustments across the entry list and category pages
 \end{itemize}
 
 % ══════════════════════════════════════════════════════════════════════════════
