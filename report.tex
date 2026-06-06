@@ -1,0 +1,714 @@
+\documentclass[12pt,a4paper]{report}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\newcommand{\taka}{Tk.}
+% \usepackage{microtype}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{amssymb}
+% \usepackage{mdframed}
+
+% ── Colours ───────────────────────────────────────────────────────────────────
+\definecolor{primary}{RGB}{8,107,79}
+\definecolor{accent}{RGB}{225,67,80}
+\definecolor{darkbg}{RGB}{17,24,39}
+\definecolor{lightgray}{RGB}{243,244,246}
+\definecolor{coolgray}{RGB}{107,114,128}
+\definecolor{linkblue}{RGB}{37,99,235}
+\definecolor{codebg}{RGB}{248,249,250}
+
+% ── Hyperref setup ────────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=primary,
+  urlcolor=linkblue,
+  citecolor=primary,
+  pdfauthor={Shihab Shaharia, Abid Ahmed Angkon, Mahfuz Iqram Sunny},
+  pdftitle={Expenser - Project Report},
+}
+
+% ── Header / Footer ───────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{coolgray}{Expenser — Personal Finance Tracker}}
+\fancyhead[R]{\small\textcolor{coolgray}{CSE474.3 · Southeast University}}
+\fancyfoot[C]{\small\textcolor{coolgray}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Section formatting ────────────────────────────────────────────────────────
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{darkbg}}
+  {\color{primary}\chaptertitlename\ \thechapter}{12pt}{\Huge}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{darkbg}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{darkbg}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{coolgray}}{\thesubsubsection}{1em}{}
+
+% ── Listings (code) ───────────────────────────────────────────────────────────
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{lightgray},
+  breaklines=true,
+  captionpos=b,
+}
+
+% ── TikZ styles ───────────────────────────────────────────────────────────────
+\tikzset{
+  entity/.style={rectangle, draw=primary, fill=primary!8, rounded corners=4pt,
+                 minimum width=2.8cm, minimum height=0.7cm, font=\small\bfseries,
+                 text=darkbg, align=center},
+  attr/.style={rectangle, draw=gray!50, fill=white, rounded corners=2pt,
+               minimum width=2.8cm, minimum height=0.55cm, font=\footnotesize,
+               text=darkbg, align=left, inner sep=4pt},
+  arrow/.style={-{Latex[length=3pt]}, gray!70, line width=0.6pt},
+  box/.style={rectangle, draw=primary!40, fill=primary!5, rounded corners=6pt,
+              minimum width=3cm, minimum height=1cm, font=\small\bfseries,
+              text=darkbg, align=center},
+  layer/.style={rectangle, draw=gray!40, fill=lightgray, rounded corners=4pt,
+                font=\footnotesize\bfseries, text=coolgray, align=center},
+}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+\onehalfspacing
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  COVER PAGE
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+\vfill
+
+{\LARGE\bfseries EXPENSER}\\[4pt]
+{\large\itshape Personal Finance Tracker}\\[2pt]
+{\small\itshape A Django-based Web Application for Income, Expense \& Budget Management}
+
+\vfill
+
+\noindent\rule{\linewidth}{0.6pt}
+
+\vfill
+
+{\large\bfseries Submitted By}\\[10pt]
+
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Student Name} & \textbf{Student ID} \\
+\midrule
+Shihab Shaharia    & 2023100010136 \\[2pt]
+Abid Ahmed Angkon  & 2023200010039 \\[2pt]
+Mahfuz Iqram Sunny & 2023200010034 \\
+\bottomrule
+\end{tabular}
+
+\vfill
+
+{\large\bfseries PROJECT REPORT}\\[6pt]
+{\normalsize This Report Presented in Partial Fulfillment of the Course}\\[4pt]
+{\normalsize\bfseries CSE474.3: Software Development and Project Management}\\[4pt]
+{\normalsize in the Computer Science and Engineering Department}\\[8pt]
+{\normalsize \textbf{Submitted To:} Md. Anower Perves (AP)}\\[2pt]
+{\normalsize Lecturer, Department of CSE, Southeast University}
+
+\vfill
+
+\includegraphics[width=3.8cm]{seu_logo.png}\\[8pt]
+{\Large\bfseries SOUTHEAST UNIVERSITY}\\[4pt]
+{\normalsize Dhaka, Bangladesh}\\[3pt]
+{\normalsize June 6, 2026}
+
+\vfill
+
+\noindent\rule{\linewidth}{0.6pt}
+
+\end{titlepage}
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  TABLE OF CONTENTS
+% ══════════════════════════════════════════════════════════════════════════════
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Introduction}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Expenser is a web-based personal finance management application developed as part of the CSE474.3 Software Development and Project Management Lab course at Southeast University. The main idea behind this project was to build something useful while learning Django properly. We wanted to make a simple tool where a user can log their daily income and expenses, keep track of monthly budgets, and see reports on how they are spending.
+
+The application is built using Python and Django on the backend, PostgreSQL as the database, and Tailwind CSS for the frontend styling. It runs on a Linux virtual machine environment during development.
+
+\section{Project Goals}
+
+\begin{itemize}
+  \item Allow users to record income and expense entries with categories and tags
+  \item Let users set monthly budgets per category and track spending
+  \item Generate financial reports over different time periods
+  \item Export report data as CSV
+  \item Implement Django's authentication system for secure user accounts
+  \item Practice team-based development using Git and GitHub
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Project Planning}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Development Methodology}
+
+We used an Agile approach for this project. Since we were three people working on different parts at the same time, Agile made sense because we could work in parallel and merge our work regularly through GitHub pull requests. A strict Waterfall approach would not have worked well here because we needed to adjust things as we went.
+
+We split the work into three rough sprints, each roughly one to two weeks:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|p{3.5cm}|p{8cm}|}
+\hline
+\textbf{Sprint} & \textbf{Who} & \textbf{What was done} \\
+\hline
+1 & Shihab & Project setup, database models, admin, authentication, base templates, category seeding \\
+\hline
+2 & Abid & Entry, Category, Budget views and forms, filtering, pagination \\
+\hline
+3 & Mahfuz & Reports module, CSV export, custom template tags, Chart.js charts \\
+\hline
+\end{tabular}
+\caption{Sprint plan}
+\end{table}
+
+\section{Task Distribution}
+
+We divided the work based on Django's natural structure. Each person owned one layer of the application:
+
+\begin{itemize}
+  \item \textbf{Shihab Shaharia} -- Project structure, models, authentication, admin, dashboard, UI templates
+  \item \textbf{Abid Ahmed Angkon} -- All CRUD views and forms for entries, categories, and budgets
+  \item \textbf{Mahfuz Iqram Sunny} -- Reports, CSV export, custom template tags, charts
+\end{itemize}
+
+We used GitHub for version control. Each person worked on their own branch and submitted pull requests when features were ready. The main branch was kept stable at all times.
+
+\section{Tools Used for Planning}
+
+\begin{itemize}
+  \item GitHub Issues and PRs for task tracking and code review
+  \item WhatsApp group for quick communication
+  \item Shared Google Doc for initial planning notes
+  \item draw.io for the ER diagram draft
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Environment Setup (Linux VM)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The project runs on a Linux virtual machine (Ubuntu 22.04). Below are the steps to set it up from scratch.
+
+\section{System Requirements}
+
+\begin{itemize}
+  \item Ubuntu 22.04 LTS (or similar Debian-based Linux)
+  \item Python 3.11 or 3.12
+  \item PostgreSQL 14 or later
+  \item Node.js 18 or 20 LTS (for Tailwind CSS build)
+  \item Git
+\end{itemize}
+
+\section{Step-by-Step Setup}
+
+\subsection{1. Install System Dependencies}
+
+\begin{lstlisting}[language=bash]
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y python3 python3-pip python3-venv
+sudo apt install -y postgresql postgresql-contrib
+sudo apt install -y nodejs npm git
+\end{lstlisting}
+
+\subsection{2. Set Up PostgreSQL}
+
+\begin{lstlisting}[language=bash]
+sudo -u postgres psql
+\end{lstlisting}
+
+Inside the PostgreSQL shell:
+
+\begin{lstlisting}[language=SQL]
+CREATE DATABASE expenser_db;
+CREATE USER expenser_user WITH PASSWORD 'expenser_pass';
+GRANT ALL PRIVILEGES ON DATABASE expenser_db TO expenser_user;
+\q
+\end{lstlisting}
+
+\subsection{3. Clone the Repository}
+
+\begin{lstlisting}[language=bash]
+git clone https://github.com/shihabshaharia/expenser.git
+cd expenser
+\end{lstlisting}
+
+\subsection{4. Create Virtual Environment and Install Dependencies}
+
+\begin{lstlisting}[language=bash]
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+\end{lstlisting}
+
+\subsection{5. Configure Environment Variables}
+
+Create a \texttt{.env} file in the project root:
+
+\begin{lstlisting}
+DJANGO_SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DB_NAME=expenser_db
+DB_USER=expenser_user
+DB_PASSWORD=expenser_pass
+DB_HOST=localhost
+DB_PORT=5432
+\end{lstlisting}
+
+\subsection{6. Run Migrations and Seed Data}
+
+\begin{lstlisting}[language=bash]
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py seed_categories
+\end{lstlisting}
+
+\subsection{7. Build Tailwind CSS and Start the Server}
+
+\begin{lstlisting}[language=bash]
+python manage.py tailwind build
+python manage.py runserver
+\end{lstlisting}
+
+The application will be available at \texttt{http://127.0.0.1:8000}.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Project Structure}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{File Structure}
+
+The project follows Django's standard app-based layout. Each feature has its own Django app:
+
+\begin{lstlisting}
+expenser/                  <- Django project config
+    settings.py
+    urls.py
+    wsgi.py
+
+accounts/                  <- User registration, login, signals
+    models.py
+    views.py
+    urls.py
+    signals.py
+    forms.py
+
+core/                      <- Categories, Tags, Entries, Dashboard
+    models.py
+    views.py
+    forms.py
+    urls.py
+    dashboard_urls.py
+    templatetags/
+        expenser_tags.py   <- Custom filters and template tags
+    management/commands/
+        seed_categories.py
+        process_recurring.py
+
+budgets/                   <- Budget model and CRUD
+    models.py
+    views.py
+    forms.py
+    urls.py
+
+reports/                   <- Reports and CSV export
+    views.py
+    urls.py
+
+templates/                 <- All HTML templates
+    base.html
+    core/
+    budgets/
+    reports/
+    registration/
+    accounts/
+
+theme/                     <- Tailwind CSS build pipeline
+    static_src/
+        tailwind.config.js
+\end{lstlisting}
+
+\section{Key Configuration Files}
+
+\subsection{settings.py}
+
+The settings file controls how Django is configured. Some important sections:
+
+\begin{lstlisting}[language=Python]
+INSTALLED_APPS = [
+    # Django built-ins
+    'django.contrib.admin',
+    'django.contrib.auth',
+    ...
+    # Third party
+    'tailwind',
+    # Our apps
+    'theme', 'accounts', 'core', 'budgets', 'reports',
+]
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+    }
+}
+
+AUTH_USER_MODEL = 'accounts.User'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+\end{lstlisting}
+
+All sensitive values (secret key, database password) are loaded from a \texttt{.env} file using \texttt{python-dotenv} so they are not hardcoded in the source code.
+
+\subsection{URL Routing}
+
+Django routes HTTP requests using \texttt{urls.py} files. The top-level URL config in \texttt{expenser/urls.py} distributes requests to each app:
+
+\begin{lstlisting}[language=Python]
+urlpatterns = [
+    path('admin/',    admin.site.urls),
+    path('accounts/', include('accounts.urls')),
+    path('entries/',  include('core.urls')),
+    path('budgets/',  include('budgets.urls')),
+    path('reports/',  include('reports.urls')),
+    path('',          include('core.dashboard_urls')),
+]
+\end{lstlisting}
+
+Each app then has its own \texttt{urls.py}. For example, \texttt{core/urls.py}:
+
+\begin{lstlisting}[language=Python]
+urlpatterns = [
+    path('',              EntryListView.as_view(),   name='entry_list'),
+    path('add/',          EntryCreateView.as_view(), name='entry_create'),
+    path('<int:pk>/edit/',EntryUpdateView.as_view(), name='entry_update'),
+    path('<int:pk>/del/', EntryDeleteView.as_view(), name='entry_delete'),
+    path('categories/',   CategoryListView.as_view(),name='category_list'),
+    ...
+]
+\end{lstlisting}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Database Design}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Models Overview}
+
+The application has five main models. All models filter data by the logged-in user, so one user never sees another user's data.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Model} & \textbf{Purpose} \\
+\hline
+User     & Custom user model extending Django's AbstractUser, adds unique email \\
+Category & Income or expense category, belongs to a user \\
+Tag      & Freeform label that can be attached to multiple entries \\
+Entry    & A single income or expense transaction \\
+Budget   & A monthly spending limit for one category \\
+\hline
+\end{tabular}
+\caption{Application models}
+\end{table}
+
+\section{Entity-Relationship Diagram}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.0cm]
+
+  % User
+  \node[entity] (user_h) {User};
+  \node[attr, below=0pt of user_h] (u1) {\textbf{id} \hfill PK};
+  \node[attr, below=0pt of u1]     (u2) {username};
+  \node[attr, below=0pt of u2]     (u3) {email};
+  \node[attr, below=0pt of u3]     (u4) {password};
+  \begin{scope}[on background layer]
+    \node[fit=(user_h)(u1)(u2)(u3)(u4), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (user_box) {};
+  \end{scope}
+
+  % Category
+  \node[entity, right=5cm of user_h] (cat_h) {Category};
+  \node[attr, below=0pt of cat_h] (c1) {\textbf{id} \hfill PK};
+  \node[attr, below=0pt of c1]    (c2) {user\_id \hfill FK};
+  \node[attr, below=0pt of c2]    (c3) {name};
+  \node[attr, below=0pt of c3]    (c4) {entry\_type};
+  \begin{scope}[on background layer]
+    \node[fit=(cat_h)(c1)(c2)(c3)(c4), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (cat_box) {};
+  \end{scope}
+
+  % Entry
+  \node[entity, right=5cm of cat_h] (ent_h) {Entry};
+  \node[attr, below=0pt of ent_h] (e1) {\textbf{id} \hfill PK};
+  \node[attr, below=0pt of e1]    (e2) {user\_id \hfill FK};
+  \node[attr, below=0pt of e2]    (e3) {category\_id \hfill FK};
+  \node[attr, below=0pt of e3]    (e4) {entry\_type};
+  \node[attr, below=0pt of e4]    (e5) {amount};
+  \node[attr, below=0pt of e5]    (e6) {date};
+  \node[attr, below=0pt of e6]    (e7) {description};
+  \node[attr, below=0pt of e7]    (e8) {is\_recurring};
+  \begin{scope}[on background layer]
+    \node[fit=(ent_h)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (ent_box) {};
+  \end{scope}
+
+  % Tag
+  \node[entity, below=3.2cm of cat_h] (tag_h) {Tag};
+  \node[attr, below=0pt of tag_h] (t1) {\textbf{id} \hfill PK};
+  \node[attr, below=0pt of t1]    (t2) {user\_id \hfill FK};
+  \node[attr, below=0pt of t2]    (t3) {name};
+  \begin{scope}[on background layer]
+    \node[fit=(tag_h)(t1)(t2)(t3), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (tag_box) {};
+  \end{scope}
+
+  % Budget
+  \node[entity, above=2cm of ent_h] (bud_h) {Budget};
+  \node[attr, below=0pt of bud_h] (b1) {\textbf{id} \hfill PK};
+  \node[attr, below=0pt of b1]    (b2) {user\_id \hfill FK};
+  \node[attr, below=0pt of b2]    (b3) {category\_id \hfill FK};
+  \node[attr, below=0pt of b3]    (b4) {amount};
+  \node[attr, below=0pt of b4]    (b5) {month};
+  \begin{scope}[on background layer]
+    \node[fit=(bud_h)(b1)(b2)(b3)(b4)(b5), draw=primary!40, rounded corners=4pt, fill=primary!3, inner sep=2pt] (bud_box) {};
+  \end{scope}
+
+  % Entry_Tag
+  \node[entity, below=3.2cm of ent_h] (et_h) {Entry\_Tag};
+  \node[attr, below=0pt of et_h] (et1) {entry\_id \hfill FK};
+  \node[attr, below=0pt of et1]  (et2) {tag\_id \hfill FK};
+  \begin{scope}[on background layer]
+    \node[fit=(et_h)(et1)(et2), draw=accent!50, rounded corners=4pt, fill=accent!5, inner sep=2pt] (et_box) {};
+  \end{scope}
+
+  % Relations
+  \draw[arrow, thick] (user_box.east) -- node[above,font=\tiny]{owns} (cat_box.west);
+  \draw[arrow, thick] (user_box.east) to[bend right=18] node[below,font=\tiny]{owns} (tag_box.west);
+  \draw[arrow, thick] (user_box.east) to[bend left=12]  node[above,font=\tiny]{owns} (bud_box.west);
+  \draw[arrow, thick] (cat_box.east)  -- node[above,font=\tiny]{categorises} (ent_box.west);
+  \draw[arrow, thick] (user_box)      to[bend left=8]   node[above,font=\tiny]{owns} (ent_box.west);
+  \draw[arrow, thick] (cat_box.east)  to[bend left=15]  node[right,font=\tiny]{budgeted} (bud_box.south);
+  \draw[arrow, thick] (ent_box.south) -- node[right,font=\tiny]{has} (et_box.north);
+  \draw[arrow, thick] (tag_box.east)  -- node[above,font=\tiny]{applied to} (et_box.west);
+\end{tikzpicture}
+\caption{Entity-Relationship Diagram}
+\end{figure}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{System Features and Implementation}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Authentication}
+
+User registration and login are handled using Django's built-in auth system. We created a custom \texttt{User} model in the \texttt{accounts} app that extends \texttt{AbstractUser} and adds a unique email field.
+
+When a new user registers, a Django signal automatically runs and creates 14 default categories (9 expense, 5 income) for them. This is done through a post-save signal in \texttt{accounts/signals.py} that calls a utility function from \texttt{core/utils.py}.
+
+\section{CRUD Operations}
+
+All the main features (entries, categories, budgets) follow the same pattern using Django's Class-Based Views (CBVs). Here is how the entry CRUD works as an example:
+
+\begin{lstlisting}[language=Python, caption={Entry views using Django CBVs}]
+class EntryListView(LoginRequiredMixin, ListView):
+    model = Entry
+    context_object_name = 'entries'
+    paginate_by = 25
+
+    def get_queryset(self):
+        # Always filter by the logged-in user
+        return Entry.objects.filter(user=self.request.user)
+
+class EntryCreateView(LoginRequiredMixin, CreateView):
+    model = Entry
+    form_class = EntryForm
+    success_url = reverse_lazy('entry_list')
+
+    def form_valid(self, form):
+        # Attach the current user before saving
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+class EntryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Entry
+
+    def test_func(self):
+        # Make sure only the owner can delete
+        return self.get_object().user == self.request.user
+\end{lstlisting}
+
+The same pattern is used for categories and budgets. Every queryset filters by \texttt{user=request.user} to make sure users can only see their own data.
+
+\section{Forms and Validation}
+
+We used Django's ModelForm for all input forms. The \texttt{EntryForm} does the following validation:
+
+\begin{itemize}
+  \item Amount must be greater than zero
+  \item Date cannot be in the future
+  \item The selected category's type must match the entry type (e.g. an income entry cannot use an expense category)
+  \item Tags are entered as comma-separated text and saved as M2M relationships
+\end{itemize}
+
+The \texttt{BudgetForm} handles a special case: the HTML \texttt{<input type="month">} widget sends \texttt{YYYY-MM} but Django's \texttt{DateField} expects \texttt{YYYY-MM-DD}. The form's \texttt{clean\_month()} method adds \texttt{-01} to fix this.
+
+\section{Dashboard}
+
+The dashboard uses Django's ORM to calculate monthly totals:
+
+\begin{lstlisting}[language=Python]
+total_income = Entry.objects.filter(
+    user=user,
+    date__year=today.year,
+    date__month=today.month,
+    entry_type='INCOME'
+).aggregate(total=Sum('amount'))['total'] or 0
+\end{lstlisting}
+
+It also generates data for two charts: a 30-day daily trend chart and an expenses-by-category donut chart. These are passed to the template as JSON and rendered using Chart.js.
+
+\section{Reports and CSV Export}
+
+The reports page allows users to filter by time period (this week, this month, last month, this year, custom range). The \texttt{ReportView} calculates totals for the selected period and passes them to a Chart.js bar chart.
+
+The CSV export uses Python's built-in \texttt{csv} module:
+
+\begin{lstlisting}[language=Python]
+class ExportCSVView(LoginRequiredMixin, View):
+    def get(self, request):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="report.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Date', 'Type', 'Category', 'Amount', 'Description'])
+        for entry in entries:
+            writer.writerow([entry.date, entry.entry_type,
+                             entry.category.name, entry.amount,
+                             entry.description])
+        return response
+\end{lstlisting}
+
+\section{Custom Template Tags}
+
+We created a custom template tag library in \texttt{core/templatetags/expenser\_tags.py}. This allows us to use filters directly in Django templates:
+
+\begin{itemize}
+  \item \texttt{currency} -- formats a number as \texttt{Tk. 1,234.56}
+  \item \texttt{percentage} -- calculates percentage safely (avoids division by zero)
+  \item \texttt{tag\_pills} -- renders coloured badge tags for each entry
+  \item \texttt{category\_color\_hex} -- returns a colour based on the category name for avatar backgrounds
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Team Contributions}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Name} & \textbf{Student ID} & \textbf{Role} \\
+\hline
+Shihab Shaharia    & 2023100010136 & Person 1 \\
+Abid Ahmed Angkon  & 2023200010039 & Person 2 \\
+Mahfuz Iqram Sunny & 2023200010034 & Person 3 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Shihab Shaharia --- Person 1}
+
+\begin{itemize}
+  \item Set up the Django project, folder structure, PostgreSQL database, and virtual environment configuration
+  \item Designed all database models and wrote the initial migrations
+  \item Set up Django admin with list displays and filters for all models
+  \item Built the authentication system including the custom User model and registration view
+  \item Wrote the post-save signal that seeds default categories for new users
+  \item Built the dashboard view with ORM aggregations and chart data
+  \item Created all base HTML templates and the overall page layout
+  \item Managed the GitHub repository, reviewed pull requests, and resolved merge conflicts
+\end{itemize}
+
+\section{Abid Ahmed Angkon --- Person 2}
+
+\begin{itemize}
+  \item Implemented all Entry views (list, create, update, delete) using Django CBVs
+  \item Built the EntryForm with field-level and cross-field validation
+  \item Implemented all Category views and CategoryForm
+  \item Built all Budget views with spending calculation logic
+  \item Handled the BudgetForm month field coercion from YYYY-MM to a date
+  \item Added entry filtering by type, category, tag, and date range
+  \item Wrote the \texttt{process\_recurring} management command
+  \item Wired up the slide-over drawer for add/edit forms
+\end{itemize}
+
+\section{Mahfuz Iqram Sunny --- Person 3}
+
+\begin{itemize}
+  \item Built the ReportView with all date range presets and ORM aggregations
+  \item Implemented the CSV export using Python's built-in csv module
+  \item Wrote all custom template tags: \texttt{currency}, \texttt{percentage}, \texttt{tag\_pills}, \texttt{category\_color\_hex}
+  \item Set up Chart.js for the area trend chart, donut chart, and sparkline cards on the dashboard
+  \item Designed and styled the reports page template
+  \item Helped with UI adjustments across the entry list and category pages
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Conclusion}
+% ══════════════════════════════════════════════════════════════════════════════
+
+We built Expenser as a working personal finance tracker using Django and PostgreSQL. The project helped us understand how to structure a real Django application with multiple apps, how to use class-based views properly, how forms and validation work, and how to use signals and custom management commands.
+
+Working as a team through GitHub taught us how to manage branches, review each other's code, and merge work without breaking things. We ran into a few issues along the way, like resolving merge conflicts and debugging template rendering problems, but we sorted them out as we went.
+
+The application covers everything that was required: user authentication, transaction tracking, category and budget management, reports, and CSV export. It runs on a Linux virtual machine and the setup process is documented in this report.
+
+\vspace{0.5cm}
+\textbf{Repository:} \url{https://github.com/shihabshaharia/expenser}
+
+\begin{thebibliography}{9}
+\bibitem{django} Django Software Foundation, \textit{Django Documentation}, version 5.2. \url{https://docs.djangoproject.com}
+\bibitem{postgres} PostgreSQL Global Development Group, \textit{PostgreSQL Documentation}. \url{https://www.postgresql.org/docs}
+\bibitem{tailwind} Tailwind Labs, \textit{Tailwind CSS Docs}. \url{https://tailwindcss.com/docs}
+\bibitem{chartjs} Chart.js Contributors, \textit{Chart.js Docs}. \url{https://www.chartjs.org/docs}
+\end{thebibliography}
+
+\end{document}

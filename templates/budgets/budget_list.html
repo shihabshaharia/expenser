@@ -1,63 +1,91 @@
 {% extends "base.html" %}
+{% load expenser_tags %}
 {% block title %}Budgets — Expenser{% endblock %}
 
 {% block content %}
 
 <!-- Page header -->
-<div class="flex items-center justify-between mb-6">
-  <div>
-    <p class="text-xs font-medium tracking-widest uppercase text-gray-400">This month</p>
-    <h1 class="text-2xl font-bold text-gray-900 mt-0.5">Budgets</h1>
+<div class="flex items-center justify-between mb-8">
+  <div class="flex items-center gap-3">
+    <h1 class="text-2xl font-bold text-gray-900">Budgets</h1>
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-500">
+      {{ budgets|length }}
+    </span>
   </div>
-  <a href="{% url 'budget_create' %}"
-     class="bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+  <button data-open-budget-drawer
+          class="bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
     + Add budget
-  </a>
+  </button>
 </div>
 
-<!-- Budget progress cards -->
-<div class="space-y-4">
+<!-- Budget cards -->
+<div style="display:flex;flex-direction:column;gap:12px;">
   {% for budget in budgets %}
-    <div class="bg-white border border-gray-200 rounded-xl p-5">
-      <div class="flex items-center justify-between mb-3">
+  <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+
+    <!-- Card header -->
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-3">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:{{ budget.category.name|category_color_hex }};color:white;font-size:14px;font-weight:700;flex-shrink:0;">
+          {{ budget.category.name|first|upper }}
+        </span>
         <div>
           <p class="text-sm font-semibold text-gray-900">{{ budget.category.name }}</p>
-          <p class="text-xs text-gray-400 mt-0.5">
-            £{{ budget.spent }} spent of £{{ budget.amount }} limit
-          </p>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="text-sm font-semibold
-            {% if budget.percentage >= 100 %}text-red-600
-            {% elif budget.percentage >= 80 %}text-amber-600
-            {% else %}text-gray-900{% endif %}">
-            {{ budget.percentage }}%
-          </span>
-          <a href="{% url 'budget_update' budget.pk %}" class="text-xs text-gray-400 hover:text-gray-700">Edit</a>
-          <a href="{% url 'budget_delete' budget.pk %}" class="text-xs text-gray-400 hover:text-red-600">Delete</a>
+          <p class="text-xs text-gray-400 mt-0.5">{{ budget.month|date:"F Y" }}</p>
         </div>
       </div>
-      <!-- Progress bar -->
-      <div class="w-full bg-gray-200 rounded-full h-1.5">
-        <div class="h-1.5 rounded-full transition-all duration-300
-          {% if budget.percentage >= 100 %}bg-red-500
-          {% elif budget.percentage >= 80 %}bg-amber-400
-          {% else %}bg-green-500{% endif %}"
-             style="width: {% if budget.percentage > 100 %}100{% else %}{{ budget.percentage }}{% endif %}%">
-        </div>
-      </div>
-    </div>
-  {% empty %}
-    <div class="bg-white border border-gray-200 rounded-xl">
-      <div class="text-center py-16">
-        <p class="text-sm font-medium text-gray-900">No budgets set for this month</p>
-        <p class="text-xs text-gray-400 mt-1">Set a spending limit for each category you want to track.</p>
-        <a href="{% url 'budget_create' %}"
-           class="mt-4 inline-block bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
-          + Add budget
+      <div class="flex items-center gap-1">
+        <button data-open-budget-drawer
+                data-budget-url="{% url 'budget_update' budget.pk %}"
+                class="px-3 py-1.5 text-xs text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+          Edit
+        </button>
+        <a href="{% url 'budget_delete' budget.pk %}"
+           class="px-3 py-1.5 text-xs text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+          Delete
         </a>
       </div>
     </div>
+
+    <!-- Spend vs limit row -->
+    <div class="flex items-end justify-between mb-2">
+      <p class="text-xs text-gray-400">
+        <span class="text-sm font-semibold {% if budget.percentage >= 100 %}text-expense-600{% elif budget.percentage >= 80 %}text-amber-600{% else %}text-gray-900{% endif %}">
+          {{ budget.spent|currency }}
+        </span>
+        &nbsp;spent of {{ budget.amount|currency }}
+      </p>
+      <span class="text-xs font-semibold tabular-nums {% if budget.percentage >= 100 %}text-expense-600{% elif budget.percentage >= 80 %}text-amber-600{% else %}text-income-600{% endif %}">
+        {{ budget.percentage }}%
+      </span>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="width:100%;background:#f3f4f6;border-radius:9999px;height:6px;overflow:hidden;">
+      <div style="height:6px;border-radius:9999px;transition:width 0.5s;
+                  width:{% if budget.percentage > 100 %}100{% else %}{{ budget.percentage }}{% endif %}%;
+                  background:{% if budget.percentage >= 100 %}#E14350{% elif budget.percentage >= 80 %}#f59e0b{% else %}#086B4F{% endif %};">
+      </div>
+    </div>
+
+    {% if budget.percentage >= 100 %}
+    <p class="mt-3 text-xs text-expense-600 font-medium">Over budget — {{ budget.spent|currency }} of {{ budget.amount|currency }} limit.</p>
+    {% elif budget.percentage >= 80 %}
+    <p class="mt-3 text-xs text-amber-600">Approaching limit — {{ budget.percentage }}% used.</p>
+    {% endif %}
+
+  </div>
+  {% empty %}
+  <div class="bg-white border border-gray-100 rounded-2xl shadow-sm">
+    <div class="text-center py-16">
+      <p class="text-sm font-medium text-gray-900">No budgets set for this month</p>
+      <p class="text-xs text-gray-400 mt-1">Set a spending limit for each category you want to track.</p>
+      <button data-open-budget-drawer
+              class="mt-4 inline-flex items-center bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+        + Add budget
+      </button>
+    </div>
+  </div>
   {% endfor %}
 </div>
 

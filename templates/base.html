@@ -1,61 +1,111 @@
 {% load tailwind_tags %}
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-white">
+<html lang="en" class="h-full bg-gray-50">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Expenser{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   {% tailwind_css %}
 </head>
-<body class="h-full text-gray-900 antialiased">
+<body class="h-full text-gray-900 antialiased bg-gray-50">
 
   <!-- Navigation -->
-  <nav class="bg-white border-b border-gray-200">
+  <nav class="bg-gray-900 sticky top-0 z-30">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-14 items-center justify-between">
 
         <!-- Logo + nav links -->
         <div class="flex items-center gap-8">
-          <a href="{% url 'dashboard' %}" class="text-sm font-bold text-gray-900 tracking-tight">
-            Expenser
+          <a href="{% url 'dashboard' %}" class="flex items-center gap-2.5 flex-shrink-0">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-income text-white flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 12V8a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                <path d="M20 12h-4a2 2 0 0 0 0 4h4"/>
+              </svg>
+            </span>
+            <span class="text-sm font-bold text-white tracking-tight">Expenser</span>
           </a>
+
           {% if user.is_authenticated %}
-          <div class="flex items-center gap-6">
+          <div class="flex items-center">
+            {% with url_name=request.resolver_match.url_name|default:'' %}
             <a href="{% url 'dashboard' %}"
-               class="text-sm hover:text-gray-900 {% if request.resolver_match.url_name == 'dashboard' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+               class="relative px-3 h-14 flex items-center text-sm font-medium transition-colors
+                      {% if url_name == 'dashboard' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
               Dashboard
+              {% if url_name == 'dashboard' %}<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-income rounded-t-full"></span>{% endif %}
             </a>
             <a href="{% url 'entry_list' %}"
-               class="text-sm hover:text-gray-900 {% if 'entry' in request.resolver_match.url_name|default:'' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+               class="relative px-3 h-14 flex items-center text-sm font-medium transition-colors
+                      {% if 'entry' in url_name %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
               Entries
+              {% if 'entry' in url_name %}<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-income rounded-t-full"></span>{% endif %}
             </a>
             <a href="{% url 'category_list' %}"
-               class="text-sm hover:text-gray-900 {% if 'category' in request.resolver_match.url_name|default:'' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+               class="relative px-3 h-14 flex items-center text-sm font-medium transition-colors
+                      {% if 'category' in url_name %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
               Categories
+              {% if 'category' in url_name %}<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-income rounded-t-full"></span>{% endif %}
             </a>
             <a href="{% url 'budget_list' %}"
-               class="text-sm hover:text-gray-900 {% if 'budget' in request.resolver_match.url_name|default:'' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+               class="relative px-3 h-14 flex items-center text-sm font-medium transition-colors
+                      {% if 'budget' in url_name %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
               Budgets
+              {% if 'budget' in url_name %}<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-income rounded-t-full"></span>{% endif %}
             </a>
             <a href="{% url 'report' %}"
-               class="text-sm hover:text-gray-900 {% if request.resolver_match.url_name == 'report' %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+               class="relative px-3 h-14 flex items-center text-sm font-medium transition-colors
+                      {% if url_name == 'report' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
               Reports
+              {% if url_name == 'report' %}<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-income rounded-t-full"></span>{% endif %}
             </a>
+            {% endwith %}
           </div>
           {% endif %}
         </div>
 
-        <!-- User + logout -->
+        <!-- User dropdown -->
         {% if user.is_authenticated %}
-        <div class="flex items-center gap-4">
-          <span class="text-xs text-gray-400">{{ user.username }}</span>
-          <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="text-xs text-gray-400 hover:text-gray-900 transition-colors">
-              Log out
-            </button>
-          </form>
+        <div class="relative" id="user-menu-wrap">
+          <button id="user-menu-btn"
+                  class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-gray-800 transition-colors">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-income text-white text-xs font-bold flex-shrink-0">
+              {{ user.username|first|upper }}
+            </span>
+            <span class="text-sm font-medium text-white">{{ user.username }}</span>
+            <svg class="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <!-- Dropdown -->
+          <div id="user-menu-dropdown"
+               class="hidden absolute right-0 mt-1.5 w-44 bg-white rounded-xl shadow-lg ring-1 ring-gray-100 py-1 z-50">
+            <div class="px-4 py-2.5 border-b border-gray-100">
+              <p class="text-xs font-semibold text-gray-900">{{ user.username }}</p>
+              <p class="text-xs text-gray-400 truncate">{{ user.email }}</p>
+            </div>
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="w-full text-left px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                Log out
+              </button>
+            </form>
+          </div>
         </div>
+
+        <script>
+        (function () {
+          const btn = document.getElementById('user-menu-btn');
+          const drop = document.getElementById('user-menu-dropdown');
+          btn.addEventListener('click', (e) => { e.stopPropagation(); drop.classList.toggle('hidden'); });
+          document.addEventListener('click', () => drop.classList.add('hidden'));
+        })();
+        </script>
         {% endif %}
 
       </div>
@@ -67,9 +117,9 @@
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4 space-y-2">
     {% for message in messages %}
     <div class="flex items-center justify-between rounded-lg px-4 py-3 text-sm
-      {% if message.tags == 'success' %}bg-green-50 border border-green-200 text-green-800
+      {% if message.tags == 'success' %}bg-income-50 border border-income-100 text-green-800
       {% elif message.tags == 'warning' %}bg-amber-50 border border-amber-200 text-amber-800
-      {% elif message.tags == 'error' %}bg-red-50 border border-red-200 text-red-800
+      {% elif message.tags == 'error' %}bg-expense-50 border border-expense-100 text-red-800
       {% else %}bg-blue-50 border border-blue-200 text-blue-800{% endif %}">
       <span>{{ message }}</span>
     </div>
@@ -81,6 +131,319 @@
   <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
     {% block content %}{% endblock %}
   </main>
+
+  <!-- ── Entry drawer ────────────────────────────────────────────────── -->
+  <div id="entry-drawer-backdrop"
+       class="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0"
+       aria-hidden="true"></div>
+
+  <div id="entry-drawer"
+       class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl
+              transform translate-x-full transition-transform duration-300 ease-in-out
+              flex flex-col"
+       role="dialog" aria-modal="true" aria-label="Add entry">
+    <div id="entry-drawer-body" class="flex flex-col h-full">
+      <!-- content injected by JS -->
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    const drawer    = document.getElementById('entry-drawer');
+    const backdrop  = document.getElementById('entry-drawer-backdrop');
+    const body      = document.getElementById('entry-drawer-body');
+    const ENTRY_URL = '{% url "entry_create" %}';
+
+    function openDrawer() {
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.remove('opacity-0');
+        drawer.classList.remove('translate-x-full');
+      });
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      drawer.classList.add('translate-x-full');
+      backdrop.classList.add('opacity-0');
+      setTimeout(() => backdrop.classList.add('hidden'), 300);
+      document.body.style.overflow = '';
+    }
+
+    function injectHtml(html) {
+      body.innerHTML = '';
+      body.appendChild(document.createRange().createContextualFragment(html));
+    }
+
+    async function loadForm() {
+      try {
+        const res = await fetch(ENTRY_URL, { headers: { 'X-Drawer': '1' } });
+        injectHtml(await res.text());
+        wireForm();
+      } catch (e) {
+        body.innerHTML = '<p class="p-6 text-sm text-expense-600">Failed to load form.</p>';
+      }
+    }
+
+    function wireForm() {
+      document.getElementById('drawer-close')?.addEventListener('click', closeDrawer);
+      document.getElementById('drawer-cancel')?.addEventListener('click', closeDrawer);
+
+      const form = document.getElementById('drawer-form');
+      if (!form) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = form.querySelector('[type=submit]');
+        btn.disabled = true;
+        btn.textContent = 'Saving…';
+
+        try {
+          const res = await fetch(ENTRY_URL, {
+            method: 'POST',
+            headers: { 'X-Drawer': '1', 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value },
+            body: new FormData(form),
+          });
+
+          if (res.ok) {
+            const data = await res.json().catch(() => null);
+            if (data?.ok) {
+              closeDrawer();
+              window.location.reload();
+              return;
+            }
+          }
+          // Form invalid — re-render with errors
+          injectHtml(await res.text());
+          wireForm();
+        } catch {
+          btn.disabled = false;
+          btn.textContent = 'Save entry';
+        }
+      });
+    }
+
+    // Open drawer on any element with data-open-entry-drawer
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('[data-open-entry-drawer]')) {
+        e.preventDefault();
+        loadForm();
+        openDrawer();
+      }
+    });
+
+    // Close on backdrop click or Escape
+    backdrop.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+  })();
+  </script>
+
+  <!-- ── Category drawer ──────────────────────────────────────────────── -->
+  <div id="cat-drawer-backdrop"
+       class="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0"
+       aria-hidden="true"></div>
+
+  <div id="cat-drawer"
+       class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl
+              transform translate-x-full transition-transform duration-300 ease-in-out
+              flex flex-col"
+       role="dialog" aria-modal="true" aria-label="Category">
+    <div id="cat-drawer-body" class="flex flex-col h-full">
+      <!-- content injected by JS -->
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    const drawer   = document.getElementById('cat-drawer');
+    const backdrop = document.getElementById('cat-drawer-backdrop');
+    const body     = document.getElementById('cat-drawer-body');
+    const DEFAULT_URL = '{% url "category_create" %}';
+    let activeUrl = DEFAULT_URL;
+
+    function openDrawer() {
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.remove('opacity-0');
+        drawer.classList.remove('translate-x-full');
+      });
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      drawer.classList.add('translate-x-full');
+      backdrop.classList.add('opacity-0');
+      setTimeout(() => backdrop.classList.add('hidden'), 300);
+      document.body.style.overflow = '';
+    }
+
+    function injectHtml(html) {
+      body.innerHTML = '';
+      body.appendChild(document.createRange().createContextualFragment(html));
+    }
+
+    async function loadForm(url) {
+      activeUrl = url || DEFAULT_URL;
+      try {
+        const res = await fetch(activeUrl, { headers: { 'X-Drawer': '1' } });
+        injectHtml(await res.text());
+        wireForm();
+      } catch (e) {
+        body.innerHTML = '<p class="p-6 text-sm text-expense-600">Failed to load form.</p>';
+      }
+    }
+
+    function wireForm() {
+      document.getElementById('cat-drawer-close')?.addEventListener('click', closeDrawer);
+      document.getElementById('cat-drawer-cancel')?.addEventListener('click', closeDrawer);
+
+      const form = document.getElementById('cat-drawer-form');
+      if (!form) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = form.querySelector('[type=submit]');
+        btn.disabled = true;
+        btn.textContent = 'Saving…';
+
+        try {
+          const res = await fetch(activeUrl, {
+            method: 'POST',
+            headers: { 'X-Drawer': '1', 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value },
+            body: new FormData(form),
+          });
+
+          if (res.ok) {
+            const data = await res.json().catch(() => null);
+            if (data?.ok) {
+              closeDrawer();
+              window.location.reload();
+              return;
+            }
+          }
+          injectHtml(await res.text());
+          wireForm();
+        } catch {
+          btn.disabled = false;
+          btn.textContent = 'Save category';
+        }
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      const trigger = e.target.closest('[data-open-category-drawer]');
+      if (trigger) {
+        e.preventDefault();
+        const url = trigger.dataset.categoryUrl || DEFAULT_URL;
+        loadForm(url);
+        openDrawer();
+      }
+    });
+
+    backdrop.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+  })();
+  </script>
+
+  <!-- ── Budget drawer ────────────────────────────────────────────────── -->
+  <div id="budget-drawer-backdrop"
+       class="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0"
+       aria-hidden="true"></div>
+
+  <div id="budget-drawer"
+       class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl
+              transform translate-x-full transition-transform duration-300 ease-in-out
+              flex flex-col"
+       role="dialog" aria-modal="true" aria-label="Budget">
+    <div id="budget-drawer-body" class="flex flex-col h-full"></div>
+  </div>
+
+  <script>
+  (function () {
+    const drawer   = document.getElementById('budget-drawer');
+    const backdrop = document.getElementById('budget-drawer-backdrop');
+    const body     = document.getElementById('budget-drawer-body');
+    const DEFAULT_URL = '{% url "budget_create" %}';
+    let activeUrl = DEFAULT_URL;
+
+    function openDrawer() {
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.remove('opacity-0');
+        drawer.classList.remove('translate-x-full');
+      });
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      drawer.classList.add('translate-x-full');
+      backdrop.classList.add('opacity-0');
+      setTimeout(() => backdrop.classList.add('hidden'), 300);
+      document.body.style.overflow = '';
+    }
+
+    function injectHtml(html) {
+      body.innerHTML = '';
+      body.appendChild(document.createRange().createContextualFragment(html));
+    }
+
+    async function loadForm(url) {
+      activeUrl = url || DEFAULT_URL;
+      try {
+        const res = await fetch(activeUrl, { headers: { 'X-Drawer': '1' } });
+        injectHtml(await res.text());
+        wireForm();
+      } catch {
+        body.innerHTML = '<p class="p-6 text-sm text-expense-600">Failed to load form.</p>';
+      }
+    }
+
+    function wireForm() {
+      document.getElementById('budget-drawer-close')?.addEventListener('click', closeDrawer);
+      document.getElementById('budget-drawer-cancel')?.addEventListener('click', closeDrawer);
+
+      const form = document.getElementById('budget-drawer-form');
+      if (!form) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = form.querySelector('[type=submit]');
+        btn.disabled = true;
+        btn.textContent = 'Saving…';
+
+        try {
+          const res = await fetch(activeUrl, {
+            method: 'POST',
+            headers: { 'X-Drawer': '1', 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value },
+            body: new FormData(form),
+          });
+
+          if (res.ok) {
+            const data = await res.json().catch(() => null);
+            if (data?.ok) { closeDrawer(); window.location.reload(); return; }
+          }
+          injectHtml(await res.text());
+          wireForm();
+        } catch {
+          btn.disabled = false;
+          btn.textContent = 'Save budget';
+        }
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      const trigger = e.target.closest('[data-open-budget-drawer]');
+      if (trigger) {
+        e.preventDefault();
+        loadForm(trigger.dataset.budgetUrl || DEFAULT_URL);
+        openDrawer();
+      }
+    });
+
+    backdrop.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+  })();
+  </script>
 
   {% block extra_js %}{% endblock %}
 </body>
