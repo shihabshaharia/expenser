@@ -1,0 +1,36 @@
+\contentsline {chapter}{\numberline {1}Introduction}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Project Goals}{3}{section.1.1}%
+\contentsline {chapter}{\numberline {2}Project Planning}{4}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Development Methodology}{4}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Task Distribution}{4}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Tools Used for Planning}{5}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Environment Setup (Linux VM)}{6}{chapter.3}%
+\contentsline {section}{\numberline {3.1}System Requirements}{6}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Step-by-Step Setup}{6}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}1. Install System Dependencies}{6}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}2. Set Up PostgreSQL}{6}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}3. Clone the Repository}{7}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}4. Create Virtual Environment and Install Dependencies}{7}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {3.2.5}5. Configure Environment Variables}{7}{subsection.3.2.5}%
+\contentsline {subsection}{\numberline {3.2.6}6. Run Migrations and Seed Data}{7}{subsection.3.2.6}%
+\contentsline {subsection}{\numberline {3.2.7}7. Build Tailwind CSS and Start the Server}{7}{subsection.3.2.7}%
+\contentsline {chapter}{\numberline {4}Project Structure}{9}{chapter.4}%
+\contentsline {section}{\numberline {4.1}File Structure}{9}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Key Configuration Files}{10}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}settings.py}{10}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}URL Routing}{11}{subsection.4.2.2}%
+\contentsline {chapter}{\numberline {5}Database Design}{13}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Models Overview}{13}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Entity-Relationship Diagram}{14}{section.5.2}%
+\contentsline {chapter}{\numberline {6}System Features and Implementation}{15}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Authentication}{15}{section.6.1}%
+\contentsline {section}{\numberline {6.2}CRUD Operations}{15}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Forms and Validation}{16}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Dashboard}{16}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Reports and CSV Export}{17}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Custom Template Tags}{17}{section.6.6}%
+\contentsline {chapter}{\numberline {7}Team Contributions}{18}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Shihab Shaharia --- Person 1}{18}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Abid Ahmed Angkon --- Person 2}{18}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Mahfuz Iqram Sunny --- Person 3}{19}{section.7.3}%
+\contentsline {chapter}{\numberline {8}Conclusion}{20}{chapter.8}%

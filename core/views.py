@@ -1,7 +1,8 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Sum
+from django.db.models.functions import TruncDate
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView, DeleteView, ListView, TemplateView, UpdateView,
@@ -51,6 +52,29 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # Budgets for this month with spending annotated
         budgets = self._annotate_budgets(user, today)
 
+        # 30-day daily trend for chart
+        chart_start = today - timedelta(days=29)
+        daily = (
+            Entry.objects.filter(user=user, date__gte=chart_start, date__lte=today)
+            .annotate(day=TruncDate('date'))
+            .values('day', 'entry_type')
+            .annotate(total=Sum('amount'))
+            .order_by('day')
+        )
+        income_map  = {r['day']: float(r['total']) for r in daily if r['entry_type'] == Entry.INCOME}
+        expense_map = {r['day']: float(r['total']) for r in daily if r['entry_type'] == Entry.EXPENSE}
+        days = [chart_start + timedelta(days=i) for i in range(30)]
+
+        # Expenses by category this month (for donut chart)
+        by_category = (
+            base_qs.filter(entry_type=Entry.EXPENSE)
+            .values('category__name')
+            .annotate(total=Sum('amount'))
+            .order_by('-total')[:8]
+        )
+        donut_labels = [r['category__name'] for r in by_category]
+        donut_values = [float(r['total']) for r in by_category]
+
         ctx.update({
             'total_income': total_income,
             'total_expenses': total_expenses,
@@ -58,6 +82,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'recent_entries': recent_entries,
             'budgets': budgets,
             'entry_form': EntryForm(user=user),
+            'chart_labels':   [d.strftime('%-d %b') for d in days],
+            'chart_income':   [income_map.get(d, 0)  for d in days],
+            'chart_expenses': [expense_map.get(d, 0) for d in days],
+            'donut_labels':   donut_labels,
+            'donut_values':   donut_values,
         })
         return ctx
 
@@ -141,6 +170,23 @@ class EntryCreateView(LoginRequiredMixin, CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+    def get_template_names(self):
+        if self.request.headers.get('X-Drawer') == '1':
+            return ['core/partials/entry_form_partial.html']
+        return [self.template_name]
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.request.headers.get('X-Drawer') == '1':
+            from django.http import JsonResponse
+            return JsonResponse({'ok': True})
+        return response
+
+    def form_invalid(self, form):
+        if self.request.headers.get('X-Drawer') == '1':
+            return self.render_to_response(self.get_context_data(form=form))
+        return super().form_invalid(form)
+
 
 class EntryUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Entry
@@ -190,6 +236,23 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+    def get_template_names(self):
+        if self.request.headers.get('X-Drawer') == '1':
+            return ['core/partials/category_form_partial.html']
+        return [self.template_name]
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.request.headers.get('X-Drawer') == '1':
+            from django.http import JsonResponse
+            return JsonResponse({'ok': True})
+        return response
+
+    def form_invalid(self, form):
+        if self.request.headers.get('X-Drawer') == '1':
+            return self.render_to_response(self.get_context_data(form=form))
+        return super().form_invalid(form)
+
 
 class CategoryUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Category
@@ -207,6 +270,23 @@ class CategoryUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         return self.get_object().user == self.request.user
+
+    def get_template_names(self):
+        if self.request.headers.get('X-Drawer') == '1':
+            return ['core/partials/category_form_partial.html']
+        return [self.template_name]
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.request.headers.get('X-Drawer') == '1':
+            from django.http import JsonResponse
+            return JsonResponse({'ok': True})
+        return response
+
+    def form_invalid(self, form):
+        if self.request.headers.get('X-Drawer') == '1':
+            return self.render_to_response(self.get_context_data(form=form))
+        return super().form_invalid(form)
 
 
 class CategoryDeleteView(LoginRequiredMixin, DeleteView):

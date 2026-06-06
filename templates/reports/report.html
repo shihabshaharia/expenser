@@ -4,9 +4,9 @@
 
 {% block content %}
 
-{# -----------------------------------------------------------------------
+{% comment %} -----------------------------------------------------------------------
    Page header + CSV export button
-   ----------------------------------------------------------------------- #}
+   ----------------------------------------------------------------------- {% endcomment %}
 <div class="flex items-center justify-between mb-6">
   <div>
     <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Summary</p>
@@ -23,11 +23,11 @@
   </a>
 </div>
 
-{# -----------------------------------------------------------------------
+{% comment %} -----------------------------------------------------------------------
    Preset range tab bar
    Active preset = bg-gray-900 text-white
    Inactive     = bg-white text-gray-500 border border-gray-200
-   ----------------------------------------------------------------------- #}
+   ----------------------------------------------------------------------- {% endcomment %}
 <div class="flex flex-wrap gap-2 mb-6">
   {% for key, label in presets %}
     <a href="?preset={{ key }}"
@@ -44,7 +44,7 @@
                     list-none select-none">
       Custom range
     </summary>
-    <div class="absolute top-full left-0 mt-2 z-10 bg-white border border-gray-200 rounded-xl shadow-lg p-4 min-w-max">
+    <div class="absolute top-full left-0 mt-2 z-10 bg-white border border-gray-200 rounded-xl shadow-sm shadow-lg p-4 min-w-max">
       <form method="get" class="flex items-end gap-3">
         <input type="hidden" name="preset" value="custom">
         <div>
@@ -72,41 +72,41 @@
   to <span class="font-medium text-gray-600">{{ date_to|date:"j N Y" }}</span>
 </p>
 
-{# -----------------------------------------------------------------------
+{% comment %} -----------------------------------------------------------------------
    Summary stat cards
-   ----------------------------------------------------------------------- #}
+   ----------------------------------------------------------------------- {% endcomment %}
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
 
   {# Income card #}
-  <div class="bg-white border border-gray-200 rounded-xl p-6">
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
     <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Total income</p>
-    <p class="mt-4 text-3xl font-bold text-green-600">{{ total_income|currency }}</p>
+    <p class="mt-4 text-3xl font-bold text-income-600">{{ total_income|currency }}</p>
   </div>
 
   {# Expenses card #}
-  <div class="bg-white border border-gray-200 rounded-xl p-6">
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
     <p class="text-xs font-medium tracking-widests uppercase text-gray-400">Total expenses</p>
-    <p class="mt-4 text-3xl font-bold text-red-600">{{ total_expenses|currency }}</p>
+    <p class="mt-4 text-3xl font-bold text-expense-600">{{ total_expenses|currency }}</p>
   </div>
 
   {# Net balance card — green when positive, red when negative #}
-  <div class="bg-white border border-gray-200 rounded-xl p-6">
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
     <p class="text-xs font-medium tracking-widest uppercase text-gray-400">Net balance</p>
     <p class="mt-4 text-3xl font-bold
-              {% if net_balance >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+              {% if net_balance >= 0 %}text-income-600{% else %}text-expense-600{% endif %}">
       {{ net_balance|currency }}
     </p>
   </div>
 
 </div>
 
-{# -----------------------------------------------------------------------
+{% comment %} -----------------------------------------------------------------------
    Two-column: category breakdown table  +  Chart.js bar chart
-   ----------------------------------------------------------------------- #}
+   ----------------------------------------------------------------------- {% endcomment %}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
   {# --- Category breakdown table ---------------------------------------- #}
-  <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
       <h2 class="text-base font-semibold text-gray-900">Expenses by category</h2>
       {% if by_category %}
@@ -125,7 +125,7 @@
         {% for row in by_category %}
           <tr class="hover:bg-gray-50 transition-colors">
             <td class="px-6 py-3 text-sm text-gray-900">{{ row.category__name }}</td>
-            <td class="px-6 py-3 text-sm font-semibold text-right text-red-600">
+            <td class="px-6 py-3 text-sm font-semibold text-right text-expense-600">
               {{ row.total|currency }}
             </td>
             <td class="px-6 py-3 text-sm text-right text-gray-400">
@@ -144,7 +144,7 @@
         <tfoot>
           <tr class="bg-gray-50 border-t border-gray-200">
             <td class="px-6 py-3 text-sm font-semibold text-gray-700">Total</td>
-            <td class="px-6 py-3 text-sm font-bold text-right text-red-600">{{ total_expenses|currency }}</td>
+            <td class="px-6 py-3 text-sm font-bold text-right text-expense-600">{{ total_expenses|currency }}</td>
             <td class="px-6 py-3 text-sm font-semibold text-right text-gray-400">100%</td>
           </tr>
         </tfoot>
@@ -153,7 +153,7 @@
   </div>
 
   {# --- Bar chart -------------------------------------------------------- #}
-  <div class="bg-white border border-gray-200 rounded-xl p-6">
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
     <h2 class="text-base font-semibold text-gray-900 mb-4">Top 5 expense categories</h2>
     {% if top_5_expense_categories %}
       <canvas id="expenseChart" class="w-full" height="280"></canvas>
@@ -169,11 +169,11 @@
 {% endblock %}
 
 
-{# -------------------------------------------------------------------------
+{% comment %} -------------------------------------------------------------------------
    Chart.js — loaded in the extra_js block so it runs after the DOM is ready.
    Data is safely serialised into JS variables using the json_script tag
    to avoid XSS risks from raw category names.
-   ------------------------------------------------------------------------- #}
+   ------------------------------------------------------------------------- {% endcomment %}
 {% block extra_js %}
 {% if top_5_expense_categories %}
 

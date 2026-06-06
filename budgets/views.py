@@ -50,13 +50,13 @@ class BudgetListView(LoginRequiredMixin, ListView):
                 messages.warning(
                     self.request,
                     f'⚠ You have exceeded your {budget.category.name} budget '
-                    f'({budget.percentage}% used — £{spent} of £{budget.amount}).',
+                    f'({budget.percentage}% used — ৳{spent} of ৳{budget.amount}).',
                 )
             elif budget.percentage >= 80:
                 messages.warning(
                     self.request,
                     f'⚠ You are approaching your {budget.category.name} budget '
-                    f'({budget.percentage}% used — £{spent} of £{budget.amount}).',
+                    f'({budget.percentage}% used — ৳{spent} of ৳{budget.amount}).',
                 )
 
         return ctx
@@ -72,6 +72,23 @@ class BudgetCreateView(LoginRequiredMixin, CreateView):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+
+    def get_template_names(self):
+        if self.request.headers.get('X-Drawer') == '1':
+            return ['budgets/partials/budget_form_partial.html']
+        return [self.template_name]
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.request.headers.get('X-Drawer') == '1':
+            from django.http import JsonResponse
+            return JsonResponse({'ok': True})
+        return response
+
+    def form_invalid(self, form):
+        if self.request.headers.get('X-Drawer') == '1':
+            return self.render_to_response(self.get_context_data(form=form))
+        return super().form_invalid(form)
 
 
 class BudgetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -90,6 +107,23 @@ class BudgetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         return self.get_object().user == self.request.user
+
+    def get_template_names(self):
+        if self.request.headers.get('X-Drawer') == '1':
+            return ['budgets/partials/budget_form_partial.html']
+        return [self.template_name]
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.request.headers.get('X-Drawer') == '1':
+            from django.http import JsonResponse
+            return JsonResponse({'ok': True})
+        return response
+
+    def form_invalid(self, form):
+        if self.request.headers.get('X-Drawer') == '1':
+            return self.render_to_response(self.get_context_data(form=form))
+        return super().form_invalid(form)
 
 
 class BudgetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

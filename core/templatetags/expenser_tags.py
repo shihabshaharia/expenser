@@ -23,6 +23,31 @@ from django import template
 
 register = template.Library()
 
+# Deterministic color palette for category avatars
+_AVATAR_COLORS = [
+    'bg-red-500',    'bg-purple-500', 'bg-teal-600',  'bg-blue-500',
+    'bg-orange-500', 'bg-pink-500',   'bg-indigo-500','bg-emerald-600',
+    'bg-amber-500',  'bg-cyan-600',   'bg-rose-500',  'bg-violet-600',
+]
+
+_AVATAR_HEX = [
+    '#ef4444', '#a855f7', '#0d9488', '#3b82f6',
+    '#f97316', '#ec4899', '#6366f1', '#059669',
+    '#f59e0b', '#0891b2', '#f43f5e', '#7c3aed',
+]
+
+@register.filter(name='category_color')
+def category_color(name):
+    """Return a deterministic Tailwind bg class for a category name."""
+    idx = sum(ord(c) for c in str(name)) % len(_AVATAR_COLORS)
+    return _AVATAR_COLORS[idx]
+
+@register.filter(name='category_color_hex')
+def category_color_hex(name):
+    """Return a deterministic hex color for a category name (for inline styles)."""
+    idx = sum(ord(c) for c in str(name)) % len(_AVATAR_HEX)
+    return _AVATAR_HEX[idx]
+
 
 # ---------------------------------------------------------------------------
 # Inclusion tag — tag pills
@@ -63,9 +88,9 @@ def currency(value):
     {{ total_expenses|currency }} →   £1,200.00
     """
     try:
-        return f'£{value:,.2f}'
+        return f'৳{value:,.2f}'
     except (TypeError, ValueError):
-        return '£0.00'
+        return '৳0.00'
 
 
 # ---------------------------------------------------------------------------

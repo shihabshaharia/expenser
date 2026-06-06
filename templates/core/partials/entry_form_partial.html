@@ -1,0 +1,234 @@
+{% load expenser_tags %}
+<form id="drawer-form" method="post" action="{% url 'entry_create' %}" class="flex flex-col h-full" novalidate>
+  {% csrf_token %}
+
+  <!-- Header -->
+  <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+    <div>
+      <h2 class="text-base font-semibold text-gray-900">Add entry</h2>
+      <p class="text-xs text-gray-400 mt-0.5">Record an income or expense</p>
+    </div>
+    <button type="button" id="drawer-close"
+            class="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  {% if form.non_field_errors %}
+  <div class="mx-6 mt-4 rounded-lg bg-expense-50 border border-expense-100 px-4 py-3">
+    <p class="text-sm text-expense-600">{{ form.non_field_errors|join:", " }}</p>
+  </div>
+  {% endif %}
+
+  <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+    <!-- Income / Expense toggle -->
+    <div>
+      <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+        Type <span class="text-expense-600">*</span>
+      </label>
+      <!-- hidden real inputs -->
+      {% for val, label in form.entry_type.field.choices %}
+        {% if val %}
+        <input type="radio" name="entry_type" id="type_{{ val }}" value="{{ val }}"
+               class="hidden"
+               {% if form.entry_type.value == val %}checked{% endif %}>
+        {% endif %}
+      {% endfor %}
+      <!-- visible pills -->
+      <div id="type-toggle" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;background:#f3f4f6;border-radius:12px;">
+        <button type="button" data-type="INCOME" id="pill-INCOME"
+                style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:8px;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:all 0.15s;">
+          <svg style="width:13px;height:13px;flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7 7 7M12 3v18"/>
+          </svg>
+          Income
+        </button>
+        <button type="button" data-type="EXPENSE" id="pill-EXPENSE"
+                style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:8px;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:all 0.15s;">
+          <svg style="width:13px;height:13px;flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7-7-7M12 21V3"/>
+          </svg>
+          Expense
+        </button>
+      </div>
+      {% if form.entry_type.errors %}
+        <p class="mt-1 text-xs text-expense-600">{{ form.entry_type.errors|join:", " }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Amount -->
+    <div>
+      <label for="{{ form.amount.id_for_label }}"
+             class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+        Amount <span class="text-expense-600">*</span>
+      </label>
+      <div style="position:relative;">
+        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:600;color:#9ca3af;pointer-events:none;line-height:1;">৳</span>
+        <input type="number" name="amount" id="{{ form.amount.id_for_label }}"
+               value="{{ form.amount.value|default:'' }}"
+               step="0.01" min="0.01" placeholder="0.00"
+               style="padding-left:28px;"
+               class="block w-full pr-3 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900">
+      </div>
+      {% if form.amount.errors %}
+        <p class="mt-1 text-xs text-expense-600">{{ form.amount.errors|join:", " }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Category -->
+    <div>
+      <label for="{{ form.category.id_for_label }}"
+             class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+        Category <span class="text-expense-600">*</span>
+      </label>
+      {{ form.category }}
+      {% if form.category.errors %}
+        <p class="mt-1 text-xs text-expense-600">{{ form.category.errors|join:", " }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Date -->
+    <div>
+      <label for="{{ form.date.id_for_label }}"
+             class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+        Date <span class="text-expense-600">*</span>
+      </label>
+      {{ form.date }}
+      {% if form.date.errors %}
+        <p class="mt-1 text-xs text-expense-600">{{ form.date.errors|join:", " }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label for="{{ form.description.id_for_label }}"
+             class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+        Description
+      </label>
+      {{ form.description }}
+    </div>
+
+    <!-- Tags -->
+    <div>
+      <label for="{{ form.tag_input.id_for_label }}"
+             class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+        Tags
+      </label>
+      {{ form.tag_input }}
+      <p class="mt-1 text-xs text-gray-400">Separate with commas, e.g. work, travel</p>
+    </div>
+
+    <!-- Recurring toggle -->
+    <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-700">Recurring entry</p>
+          <p class="text-xs text-gray-400 mt-0.5">Repeats automatically on a schedule</p>
+        </div>
+        <!-- JS-driven toggle switch -->
+        <button type="button" id="recurring-toggle-btn" role="switch" aria-checked="false"
+                style="width:36px;height:20px;border-radius:9999px;background:#d1d5db;border:none;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
+          <span id="recurring-toggle-knob"
+                style="position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:transform 0.2s;"></span>
+        </button>
+        <input type="checkbox" name="is_recurring" id="{{ form.is_recurring.id_for_label }}"
+               class="hidden" {% if form.is_recurring.value %}checked{% endif %}>
+      </div>
+
+      <div id="recurrence-field" class="mt-4 hidden">
+        <label for="{{ form.recurrence_frequency.id_for_label }}"
+               class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+          Frequency <span class="text-expense-600">*</span>
+        </label>
+        {{ form.recurrence_frequency }}
+        {% if form.recurrence_frequency.errors %}
+          <p class="mt-1 text-xs text-expense-600">{{ form.recurrence_frequency.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50">
+    <button type="button" id="drawer-cancel"
+            class="text-sm text-gray-500 hover:text-gray-900 px-4 py-2 transition-colors">
+      Cancel
+    </button>
+    <button type="submit"
+            class="bg-gray-900 text-white hover:bg-gray-700 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors">
+      Save entry
+    </button>
+  </div>
+</form>
+
+<script>
+(function () {
+  /* ── Income / Expense pill toggle ── */
+  const pillIncome  = document.getElementById('pill-INCOME');
+  const pillExpense = document.getElementById('pill-EXPENSE');
+  const radioIncome  = document.getElementById('type_INCOME');
+  const radioExpense = document.getElementById('type_EXPENSE');
+
+  function setPill(el, active, color) {
+    el.style.background  = active ? '#fff' : 'transparent';
+    el.style.boxShadow   = active ? '0 1px 3px rgba(0,0,0,.12)' : 'none';
+    el.style.color       = active ? color : '#6b7280';
+  }
+
+  const categorySelect = document.getElementById('{{ form.category.id_for_label }}');
+
+  function filterCategories(type) {
+    if (!categorySelect) return;
+    const keyword = type === 'INCOME' ? '(Income)' : '(Expense)';
+    let firstMatch = null;
+    Array.from(categorySelect.options).forEach(opt => {
+      if (!opt.value) return; // keep the blank/placeholder option
+      const match = opt.text.includes(keyword);
+      opt.hidden   = !match;
+      opt.disabled = !match;
+      if (match && !firstMatch) firstMatch = opt;
+    });
+    // If current selection is wrong type, reset to first valid option
+    const current = categorySelect.options[categorySelect.selectedIndex];
+    if (current && current.value && !current.text.includes(keyword)) {
+      categorySelect.value = firstMatch ? firstMatch.value : '';
+    }
+  }
+
+  function selectType(type) {
+    setPill(pillIncome,  type === 'INCOME',  '#086B4F');
+    setPill(pillExpense, type === 'EXPENSE', '#E14350');
+    radioIncome.checked  = type === 'INCOME';
+    radioExpense.checked = type === 'EXPENSE';
+    filterCategories(type);
+  }
+
+  pillIncome.addEventListener('click',  () => selectType('INCOME'));
+  pillExpense.addEventListener('click', () => selectType('EXPENSE'));
+
+  if (radioExpense && radioExpense.checked) selectType('EXPENSE');
+  else selectType('INCOME');
+
+  /* ── Recurring toggle switch ── */
+  const toggleBtn   = document.getElementById('recurring-toggle-btn');
+  const toggleKnob  = document.getElementById('recurring-toggle-knob');
+  const checkbox    = document.getElementById('{{ form.is_recurring.id_for_label }}');
+  const freqField   = document.getElementById('recurrence-field');
+
+  function setRecurring(on) {
+    toggleBtn.style.background = on ? '#086B4F' : '#d1d5db';
+    toggleBtn.setAttribute('aria-checked', on ? 'true' : 'false');
+    toggleKnob.style.transform = on ? 'translateX(16px)' : 'translateX(0)';
+    checkbox.checked = on;
+    freqField.classList.toggle('hidden', !on);
+  }
+
+  // Init from Django form value
+  setRecurring(checkbox.checked);
+  toggleBtn.addEventListener('click', () => setRecurring(!checkbox.checked));
+})();
+</script>
