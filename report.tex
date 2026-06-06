@@ -236,8 +236,8 @@ The goal of Sprint 1 was to get a fully working first version of the application
 \textbf{Who} & \textbf{Tasks completed} \\
 \midrule
 Shihab & Django project setup, PostgreSQL config, all database models and migrations, Django admin, custom User model, registration and login views, post-save signal for category seeding, base HTML templates, dashboard view with ORM aggregations \\[4pt]
-Abid   & Entry CRUD views and EntryForm with validation, Category CRUD views, Budget CRUD views and BudgetForm, entry list filtering by type/category/tag/date, pagination, process\_recurring management command \\[4pt]
-Mahfuz & ReportView with date-range logic, CSV export view, custom template tag library (currency filter, percentage filter, tag\_pills inclusion tag, category colour filter), Chart.js area chart and donut chart in the report template \\
+Mahfuz & ReportView with date-range logic, CSV export view, custom template tag library (currency filter, percentage filter, tag\_pills inclusion tag, category colour filter), Chart.js area chart and donut chart in the report template \\[4pt]
+Abid   & Entry CRUD views and EntryForm with validation, Category CRUD views, Budget CRUD views and BudgetForm, entry list filtering by type/category/tag/date, pagination, process\_recurring management command \\
 \bottomrule
 \end{tabular}
 \caption{Sprint 1 deliverables}
@@ -268,8 +268,8 @@ Issues found and fixed in Sprint 2:
 \textbf{Who} & \textbf{Sprint 2 work} \\
 \midrule
 Shihab & Fixed template comment bugs across all pages, redesigned dashboard layout, added sparkline charts to stat cards, rebuilt login and register pages as standalone templates \\[4pt]
-Abid   & Fixed budget admin syntax error, updated entry form with client-side category filtering, wired drawer system for category and budget forms \\[4pt]
-Mahfuz & Fixed currency symbol in template tags and chart callbacks, fixed category colour hex filter, resolved template tag errors in report page \\
+Mahfuz & Fixed currency symbol in template tags and chart callbacks, fixed category colour hex filter, resolved template tag errors in report page \\[4pt]
+Abid   & Fixed budget admin syntax error, updated entry form with client-side category filtering, wired drawer system for category and budget forms \\
 \bottomrule
 \end{tabular}
 \caption{Sprint 2 deliverables}
@@ -283,8 +283,8 @@ Each team member owned a clear part of the codebase, which reduced conflicts and
 
 \begin{itemize}
   \item \textbf{Shihab Shaharia} --- Project structure, models, authentication, admin, dashboard, all HTML templates and UI
-  \item \textbf{Abid Ahmed Angkon} --- All CRUD views and forms for entries, categories, and budgets
   \item \textbf{Mahfuz Iqram Sunny} --- Reports, CSV export, custom template tags, Chart.js visualisations
+  \item \textbf{Abid Ahmed Angkon} --- All CRUD views and forms for entries, categories, and budgets
 \end{itemize}
 
 \section{Tools Used}
@@ -651,8 +651,8 @@ We created a custom template tag library in \texttt{core/templatetags/expenser\_
 \textbf{Name} & \textbf{Student ID} & \textbf{Role} \\
 \hline
 Shihab Shaharia    & 2023100010136 & Person 1 \\
-Abid Ahmed Angkon  & 2023200010039 & Person 2 \\
-Mahfuz Iqram Sunny & 2023200010034 & Person 3 \\
+Mahfuz Iqram Sunny & 2023200010034 & Person 2 \\
+Abid Ahmed Angkon  & 2023200010039 & Person 3 \\
 \hline
 \end{tabular}
 \end{table}
@@ -670,7 +670,18 @@ Mahfuz Iqram Sunny & 2023200010034 & Person 3 \\
   \item Managed the GitHub repository, reviewed pull requests, and resolved merge conflicts
 \end{itemize}
 
-\section{Abid Ahmed Angkon --- Person 2}
+\section{Mahfuz Iqram Sunny --- Person 2}
+
+\begin{itemize}
+  \item Built the ReportView with all date range presets and ORM aggregations
+  \item Implemented the CSV export using Python's built-in csv module
+  \item Wrote all custom template tags: \texttt{currency}, \texttt{percentage}, \texttt{tag\_pills}, \texttt{category\_color\_hex}
+  \item Set up Chart.js for the area trend chart, donut chart, and sparkline cards on the dashboard
+  \item Designed and styled the reports page template
+  \item Helped with UI adjustments across the entry list and category pages
+\end{itemize}
+
+\section{Abid Ahmed Angkon --- Person 3}
 
 \begin{itemize}
   \item Implemented all Entry views (list, create, update, delete) using Django CBVs
@@ -681,17 +692,6 @@ Mahfuz Iqram Sunny & 2023200010034 & Person 3 \\
   \item Added entry filtering by type, category, tag, and date range
   \item Wrote the \texttt{process\_recurring} management command
   \item Wired up the slide-over drawer for add/edit forms
-\end{itemize}
-
-\section{Mahfuz Iqram Sunny --- Person 3}
-
-\begin{itemize}
-  \item Built the ReportView with all date range presets and ORM aggregations
-  \item Implemented the CSV export using Python's built-in csv module
-  \item Wrote all custom template tags: \texttt{currency}, \texttt{percentage}, \texttt{tag\_pills}, \texttt{category\_color\_hex}
-  \item Set up Chart.js for the area trend chart, donut chart, and sparkline cards on the dashboard
-  \item Designed and styled the reports page template
-  \item Helped with UI adjustments across the entry list and category pages
 \end{itemize}
 
 % ══════════════════════════════════════════════════════════════════════════════
@@ -706,7 +706,7 @@ The dashboard shows the monthly income, expense, and net balance stat cards with
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{ss_dashboard.jpg}
+\includegraphics[width=\linewidth]{ss_dashboard.jpeg}
 \caption{Dashboard page}
 \end{figure}
 
@@ -716,7 +716,7 @@ The entries page lists all transactions with filtering by type, category, tag, a
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{ss_entries.jpg}
+\includegraphics[width=\linewidth]{ss_entries.jpeg}
 \caption{Entries list page with filters}
 \end{figure}
 
@@ -726,7 +726,7 @@ The categories page splits all categories into Income and Expense sections, each
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{ss_categories.jpg}
+\includegraphics[width=\linewidth]{ss_categories.jpeg}
 \caption{Categories management page}
 \end{figure}
 
@@ -736,7 +736,7 @@ The budgets page shows each monthly budget with a progress bar indicating how mu
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{ss_budgets.jpg}
+\includegraphics[width=\linewidth]{ss_budgets.jpeg}
 \caption{Budgets page with progress bars}
 \end{figure}
 
@@ -746,7 +746,7 @@ The reports page allows selecting a date range preset and shows total income, ex
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{ss_reports.jpg}
+\includegraphics[width=\linewidth]{ss_reports.jpeg}
 \caption{Reports page with date range selector and bar chart}
 \end{figure}
 
