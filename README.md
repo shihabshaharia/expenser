@@ -36,57 +36,18 @@ A personal finance management web application built with Django 5. Track daily i
 
 ## Getting started
 
-Two setup paths are available — Docker (recommended, no manual config) or directly on a Ubuntu VM.
+Two setup paths are available — directly on Ubuntu (recommended) or via Docker.
 
 ---
 
-### Option A — Docker (recommended)
+### Option A — Ubuntu VM (recommended)
 
 #### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
-- Git
+
+- Ubuntu 22.04 / 24.04 LTS
+- Internet access
 
 #### Steps
-
-```bash
-# 1. Clone the repo
-git clone https://github.com/your-username/expenser.git
-cd expenser
-
-# 2. Copy environment file
-cp .env.example .env
-
-# 3. Build and start containers
-docker compose up --build
-
-# 4. In a new terminal — run migrations
-docker compose exec web python manage.py migrate
-
-# 5. Seed default categories
-docker compose exec web python manage.py seed_categories
-
-# 6. Create a superuser
-docker compose exec web python manage.py createsuperuser
-
-# 7. Start the Tailwind watcher
-docker compose exec web python manage.py tailwind start
-```
-
-App runs at **http://localhost:8000** — admin at **http://localhost:8000/admin**
-
----
-
-### Option B — Ubuntu VM (without Docker)
-
-For teammates running the project directly on a Ubuntu 24.04 VM.
-
-
-#### Prerequisites
-
-- Ubuntu 24.04 LTS VM
-- Internet access from inside the VM
-
-#### Quick steps
 
 ```bash
 # 1. Install system dependencies
@@ -138,6 +99,39 @@ In a second terminal, start the Tailwind watcher:
 source venv/bin/activate
 python manage.py tailwind start
 ```
+
+---
+
+### Option B — Docker
+
+#### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+- Git
+
+#### Steps
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/shihabshaharia/expenser.git
+cd expenser
+
+# 2. Copy environment file
+cp .env.example .env
+
+# 3. Build and start containers
+docker compose up --build
+
+# 4. In a new terminal — run migrations
+docker compose exec web python manage.py migrate
+
+# 5. Seed default categories
+docker compose exec web python manage.py seed_categories
+
+# 6. Create a superuser
+docker compose exec web python manage.py createsuperuser
+```
+
+App runs at **http://localhost:8000** — admin at **http://localhost:8000/admin**
 
 ---
 
